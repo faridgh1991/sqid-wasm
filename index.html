@@ -1,18 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sqids WASM Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Sqids WebAssembly for encoding and decoding numbers using the Sqids algorithm. Try it out online!">
+    <meta name="author" content="Farid">
+    <meta property="og:title" content="Sqids WebAssembly">
+    <meta property="og:description" content="Interactive WASM app to encode and decode numbers using Sqids WebAssembly.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="path_to_image.jpg">
+    <title>Sqids WASM Interactive Encoder/Decoder</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        input[type="number"]:focus,
+        input[type="text"]:focus,
+        button:focus {
+            border-color: #4caf50;
+            outline: none;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        p {
+            color: #333;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        span {
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
 </head>
 <body>
-<h1>Sqids WebAssembly Demo</h1>
-<input type="number" id="numberInput" placeholder="Enter a number">
-<button id="encodeBtn">Encode</button>
-<p>Encoded ID: <span id="encoded"></span></p>
+<div class="container">
+    <h1>Sqids WebAssembly: Encode and Decode</h1>
 
-<input type="text" id="idInput" placeholder="Enter an ID">
-<button id="decodeBtn">Decode</button>
-<p>Decoded Number: <span id="decoded"></span></p>
+    <section>
+        <h2>Encode Number</h2>
+        <input type="number" id="numberInput" placeholder="Enter a number">
+        <button id="encodeBtn">Encode</button>
+        <p>Encoded ID: <span id="encoded"></span></p>
+    </section>
+
+    <section>
+        <h2>Decode ID</h2>
+        <input type="text" id="idInput" placeholder="Enter an ID">
+        <button id="decodeBtn">Decode</button>
+        <p>Decoded Number: <span id="decoded"></span></p>
+    </section>
+</div>
 
 <script src="wasm_exec.js"></script>
 <script>

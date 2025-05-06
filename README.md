@@ -28,7 +28,7 @@ A simple Go WebAssembly demo using [Sqids](https://sqids.org/go) to encode and d
 
 ```bash
 go install github.com/sqids/sqids-go@latest
-GOOS=js GOARCH=wasm go build -o main.wasm
+ GOOS=js GOARCH=wasm go build -o sqids.wasm main.go
 ```
 
 ### Run Locally
@@ -54,7 +54,7 @@ In the live app:
 ```
 ├── index.html
 ├── main.go
-├── main.wasm
+├── sqids.wasm
 ├── wasm_exec.js
 └── README.md
 ```

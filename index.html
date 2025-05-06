@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sqids WASM Demo</title>
+</head>
+<body>
+<h1>Sqids WebAssembly Demo</h1>
+<input type="number" id="numberInput" placeholder="Enter a number">
+<button id="encodeBtn">Encode</button>
+<p>Encoded ID: <span id="encoded"></span></p>
+
+<input type="text" id="idInput" placeholder="Enter an ID">
+<button id="decodeBtn">Decode</button>
+<p>Decoded Number: <span id="decoded"></span></p>
+
+<script src="wasm_exec.js"></script>
+<script>
+    const go = new Go();
+
+    WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+        go.run(result.instance);
+
+        document.getElementById("encodeBtn").addEventListener("click", () => {
+            const num = parseInt(document.getElementById("numberInput").value);
+            const id = encodeSqid(num);
+            document.getElementById("encoded").textContent = id;
+        });
+
+        document.getElementById("decodeBtn").addEventListener("click", () => {
+            const id = document.getElementById("idInput").value;
+            const num = decodeSqid(id);
+            document.getElementById("decoded").textContent = num;
+        });
+    }).catch((err) => {
+        console.error("Error loading WASM module:", err);
+    });
+</script>
+</body>
+</html>

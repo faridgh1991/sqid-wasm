@@ -28,7 +28,7 @@ A simple Go WebAssembly demo using [Sqids](https://sqids.org/go) to encode and d
 
 ```bash
 go install github.com/sqids/sqids-go@latest
- GOOS=js GOARCH=wasm go build -o sqids.wasm main.go
+ GOOS=js GOARCH=wasm go build -o sqids.wasm
 ```
 
 ### Run Locally
@@ -46,7 +46,7 @@ Visit [http://localhost:8000](http://localhost:8000).
 
 In the live app:
 
-* Type numbers separated by commas (e.g., `1, 2, 3`), then click **Encode**
+* Type number, then click **Encode**
 * Click **Decode** to revert the Sqid back to numbers
 
 ## 📁 Project Structure

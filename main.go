@@ -1,23 +1,19 @@
+//go:build js && wasm
+
 package main
 
 import (
 	"syscall/js"
 
-	"github.com/sqids/sqids-go"
+	"sqid-wasm/sqids"
 )
 
-func encodeSqid(this js.Value, args []js.Value) interface{} {
+func encodeSqid(_ js.Value, args []js.Value) interface{} {
 	if len(args) < 1 {
 		return js.ValueOf("Error: Missing input")
 	}
 
-	input := args[0].Int()
-	s, err := sqids.New()
-	if err != nil {
-		return js.ValueOf("Error: " + err.Error())
-	}
-
-	id, err := s.Encode([]uint64{uint64(input)})
+	id, err := sqids.EncodeUint64(uint64(args[0].Int()))
 	if err != nil {
 		return js.ValueOf("Error: " + err.Error())
 	}
@@ -25,27 +21,22 @@ func encodeSqid(this js.Value, args []js.Value) interface{} {
 	return js.ValueOf(id)
 }
 
-func decodeSqid(this js.Value, args []js.Value) interface{} {
+func decodeSqid(_ js.Value, args []js.Value) interface{} {
 	if len(args) < 1 {
 		return js.ValueOf("Error: Missing input")
 	}
 
-	id := args[0].String()
-	s, err := sqids.New()
+	number, err := sqids.DecodeString(args[0].String())
 	if err != nil {
 		return js.ValueOf("Error: " + err.Error())
 	}
 
-	numbers := s.Decode(id)
-	if len(numbers) == 0 {
-		return js.ValueOf("Error: No numbers decoded")
-	}
-
-	return js.ValueOf(int(numbers[0]))
+	return js.ValueOf(int(number))
 }
 
 func main() {
 	js.Global().Set("encodeSqid", js.FuncOf(encodeSqid))
 	js.Global().Set("decodeSqid", js.FuncOf(decodeSqid))
+
 	select {}
 }

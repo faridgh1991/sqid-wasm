@@ -125,7 +125,7 @@
         go.run(result.instance);
 
         document.getElementById("encodeBtn").addEventListener("click", () => {
-            const num = parseInt(document.getElementById("numberInput").value);
+            const num = document.getElementById("numberInput").value;
             const id = encodeSqid(num);
             document.getElementById("encoded").textContent = id;
         });

@@ -3,6 +3,7 @@
 package main
 
 import (
+	"strconv"
 	"syscall/js"
 
 	"sqid-wasm/sqids"
@@ -13,7 +14,13 @@ func encodeSqid(_ js.Value, args []js.Value) interface{} {
 		return js.ValueOf("Error: Missing input")
 	}
 
-	id, err := sqids.EncodeUint64(uint64(args[0].Int()))
+	input := args[0].String()
+	parsedUint, err := strconv.ParseUint(input, 10, 64)
+	if err != nil {
+		return js.ValueOf("Error: " + err.Error())
+	}
+
+	id, err := sqids.EncodeUint64(parsedUint)
 	if err != nil {
 		return js.ValueOf("Error: " + err.Error())
 	}
@@ -31,7 +38,7 @@ func decodeSqid(_ js.Value, args []js.Value) interface{} {
 		return js.ValueOf("Error: " + err.Error())
 	}
 
-	return js.ValueOf(int(number))
+	return js.ValueOf(strconv.FormatUint(number, 10))
 }
 
 func main() {

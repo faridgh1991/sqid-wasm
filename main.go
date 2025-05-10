@@ -14,13 +14,8 @@ func encodeSqid(_ js.Value, args []js.Value) interface{} {
 		return js.ValueOf("Error: Missing input")
 	}
 
-	input := args[0].String()
-	parsedUint, err := strconv.ParseUint(input, 10, 64)
-	if err != nil {
-		return js.ValueOf("Error: " + err.Error())
-	}
-
-	id, err := sqids.EncodeUint64(parsedUint)
+	input := args[0].Int()
+	id, err := sqids.EncodeUint64(uint64(input))
 	if err != nil {
 		return js.ValueOf("Error: " + err.Error())
 	}

@@ -1,11 +1,11 @@
 # sqid-wasm
 
-[![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go)](https://go.dev/)
+[![TinyGo](https://img.shields.io/badge/TinyGo-0.30.0+-00ADD8?logo=go)](https://tinygo.org/)
 [![WebAssembly](https://img.shields.io/badge/WebAssembly-Enabled-654FF0?logo=webassembly)](https://webassembly.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Deploy](https://img.shields.io/badge/Deployed-GitHub%20Pages-brightgreen?logo=github)](https://farid-ghr.pro/sqid-wasm/)
 
-A simple Go WebAssembly demo using [Sqids](https://sqids.org/go) to encode and decode short IDs in the browser.
+A simple Go WebAssembly demo using [Sqids](https://sqids.org/go) to encode and decode short IDs in the browser — now compiled with [TinyGo](https://tinygo.org/).
 
 ## 🔗 Live Demo
 
@@ -14,21 +14,21 @@ A simple Go WebAssembly demo using [Sqids](https://sqids.org/go) to encode and d
 ## 📦 Features
 
 * Encode/decode integer arrays to short strings using Sqids
-* Go + WebAssembly frontend
+* Written in Go, compiled to WebAssembly with TinyGo
 * No external JS frameworks
-* Lightweight and fast
+* Small binary size, fast startup
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-* [Go 1.21+](https://go.dev/dl/)
+* [TinyGo 0.30.0+](https://tinygo.org/getting-started/)
+* [Sqids for Go](https://github.com/sqids/sqids-go)
 
 ### Build
 
 ```bash
-go install github.com/sqids/sqids-go@latest
- GOOS=js GOARCH=wasm go build -o sqids.wasm
+tinygo build -o sqids.wasm -target wasm .
 ```
 
 ### Run Locally
@@ -53,6 +53,8 @@ In the live app:
 
 ```
 ├── index.html
+├── script.js
+├── style.css
 ├── main.go
 ├── sqids.wasm
 ├── wasm_exec.js

@@ -1,92 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description"
-          content="Sqids WebAssembly for encoding and decoding numbers using the Sqids algorithm. Try it out online!">
-    <meta name="author" content="Farid">
-    <meta property="og:title" content="Sqids WebAssembly">
+          content="Sqids WebAssembly for encoding and decoding numbers using the Sqids algorithm. Try it out online!"/>
+    <meta name="author" content="Farid"/>
+    <meta property="og:title" content="Sqids WebAssembly"/>
     <meta property="og:description"
-          content="Interactive WASM app to encode and decode numbers using Sqids WebAssembly.">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="path_to_image.jpg">
+          content="Interactive WASM app to encode and decode numbers using Sqids WebAssembly."/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content="path_to_image.jpg"/>
     <title>Sqids WASM Interactive Encoder/Decoder</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7fa;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .container {
-            position: relative;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        input[type="number"],
-        input[type="text"],
-        button {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        input[type="number"]:focus,
-        input[type="text"]:focus,
-        button:focus {
-            border-color: #4caf50;
-            outline: none;
-        }
-
-        button {
-            background-color: #4caf50;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        p {
-            color: #333;
-            font-size: 16px;
-            margin-top: 20px;
-        }
-
-        span {
-            font-weight: bold;
-            color: #007bff;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 <div class="container">
     <a href="https://github.com/faridgh1991/sqid-wasm" target="_blank"
-       style="position: absolute; top: 20px; right: 20px; text-decoration: none;">
-        <svg height="24" width="24" viewBox="0 0 16 16" fill="black" aria-hidden="true">
+       class="github-link" aria-label="GitHub Repository">
+        <svg height="24" width="24" viewBox="0 0 16 16" aria-hidden="true">
             <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38
             0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
             -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
@@ -100,44 +32,26 @@
         </svg>
     </a>
 
-    <h1>Sqids WebAssembly: Encode and Decode</h1>
+    <h1>SQIDs Encoder & Decoder</h1>
 
     <section>
         <h2>Encode Number</h2>
-        <input type="number" id="numberInput" placeholder="Enter a number">
+        <label for="numberInput"></label>
+        <input type="number" id="numberInput" placeholder="e.g. 12345"/>
         <button id="encodeBtn">Encode</button>
         <p>Encoded ID: <span id="encoded"></span></p>
     </section>
 
     <section>
         <h2>Decode ID</h2>
-        <input type="text" id="idInput" placeholder="Enter an ID">
+        <label for="idInput"></label>
+        <input type="text" id="idInput" placeholder="e.g. jR"/>
         <button id="decodeBtn">Decode</button>
         <p>Decoded Number: <span id="decoded"></span></p>
     </section>
 </div>
 
 <script src="wasm_exec.js"></script>
-<script>
-    const go = new Go();
-
-    WebAssembly.instantiateStreaming(fetch("sqids.wasm"), go.importObject).then((result) => {
-        go.run(result.instance);
-
-        document.getElementById("encodeBtn").addEventListener("click", () => {
-            const num = document.getElementById("numberInput").value;
-            const id = encodeSqid(num);
-            document.getElementById("encoded").textContent = id;
-        });
-
-        document.getElementById("decodeBtn").addEventListener("click", () => {
-            const id = document.getElementById("idInput").value;
-            const num = decodeSqid(id);
-            document.getElementById("decoded").textContent = num;
-        });
-    }).catch((err) => {
-        console.error("Error loading WASM module:", err);
-    });
-</script>
+<script src="script.js"></script>
 </body>
 </html>

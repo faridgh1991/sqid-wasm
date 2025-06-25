@@ -4,51 +4,110 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description"
-          content="Sqids WebAssembly for encoding and decoding numbers using the Sqids algorithm. Try it out online!"/>
+          content="A modern and intuitive web application for encoding and decoding numbers using the Sqids algorithm, powered by WebAssembly."/>
     <meta name="author" content="Farid"/>
-    <meta property="og:title" content="Sqids WebAssembly"/>
+    <meta property="og:title" content="Sqids WebAssembly Interactive Tool"/>
     <meta property="og:description"
-          content="Interactive WASM app to encode and decode numbers using Sqids WebAssembly."/>
+          content="Easily encode and decode numbers with this interactive Sqids WebAssembly application."/>
     <meta property="og:type" content="website"/>
-    <meta property="og:image" content="path_to_image.jpg"/>
-    <title>Sqids WASM Interactive Encoder/Decoder</title>
+    <meta property="og:image" content="path_to_your_og_image.jpg"/>
+    <title>Sqids WASM Interactive Tool</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 <div class="container">
-    <a href="https://github.com/faridgh1991/sqid-wasm" target="_blank"
-       class="github-link" aria-label="GitHub Repository">
-        <svg height="24" width="24" viewBox="0 0 16 16" aria-hidden="true">
-            <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38
-            0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
-            -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
-            .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
-            0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12
-            0 0 .67-.21 2.2.82a7.65 7.65 0 012.01-.27c.68 0 1.36.09 2.01.27
-            1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15
-            0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
-            0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0016 8
-            c0-4.42-3.58-8-8-8z"></path>
-        </svg>
-    </a>
+    <header class="header">
+        <h1 class="title">Sqids Encoder & Decoder</h1>
+        <p class="subtitle">A fast and intuitive tool powered by WebAssembly</p>
+        <a href="https://github.com/faridgh1991/sqid-wasm" target="_blank"
+           class="github-link" aria-label="View on GitHub">
+            <svg class="github-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                 xmlns="http://www.w3.org/2000/svg">
+                <path
+                        d="M12 2C6.475 2 2 6.475 2 12C2 16.425 4.8625 20.1625 8.8375 21.4875C9.3375 21.575 9.525 21.275 9.525 21.0125C9.525 20.775 9.5125 19.9875 9.5125 19.15C7.55 19.5625 6.9125 18.2875 6.7375 17.7625C6.6375 17.5 6.225 16.65 5.8625 16.4C5.575 16.2125 5.1 15.6875 5.85 15.675C6.525 15.6625 7.0125 16.275 7.1875 16.55C7.95 17.8875 9.2875 17.475 9.8125 17.2375C9.8875 16.6875 10.1125 16.3 10.3375 16.1C8.3625 15.875 6.2625 15.1125 6.2625 11.6375C6.2625 10.6375 6.625 9.825 7.1875 9.1875C7.0875 8.95 6.8125 8.0875 7.275 7.0375C7.275 7.0375 7.95 6.8125 9.525 7.825C10.1625 7.65 10.8375 7.5625 11.5125 7.5625C12.1875 7.5625 12.8625 7.65 13.5 7.825C15.075 6.8125 15.75 7.0375 15.75 7.0375C16.2125 8.0875 15.9375 8.95 15.8375 9.1875C16.4 9.825 16.7625 10.6375 16.7625 11.6375C16.7625 15.125 14.6625 15.875 12.6875 16.1C12.975 16.3625 13.25 16.85 13.25 17.6C13.25 18.6875 13.2375 19.5375 13.2375 19.8125C13.2375 20.075 13.425 20.2875 13.9375 20.2C18.1375 19.1625 21 15.8 21 11.5C21 6.8125 16.9875 2.5 12 2.5"
+                        transform="translate(0.5, 0.5)" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+            </svg>
+        </a>
+    </header>
 
-    <h1>SQIDs Encoder & Decoder</h1>
+    <main class="main-content">
+        <div class="io-panel">
+            <div class="input-group">
+                <label for="numberInput" class="input-label">Number to Encode</label>
+                <div class="input-wrapper">
+                    <input type="number" id="numberInput" class="input-field" placeholder="e.g., 123456789">
+                    <button id="encodeBtn" class="action-btn">Encode</button>
+                </div>
+            </div>
 
-    <section>
-        <h2>Encode Number</h2>
-        <label for="numberInput"></label>
-        <input type="number" id="numberInput" placeholder="e.g. 12345"/>
-        <button id="encodeBtn">Encode</button>
-        <p>Encoded ID: <span id="encoded"></span></p>
-    </section>
+            <div class="input-group">
+                <label for="idInput" class="input-label">ID to Decode</label>
+                <div class="input-wrapper">
+                    <input type="text" id="idInput" class="input-field" placeholder="e.g., rDOOFW">
+                    <button id="decodeBtn" class="action-btn">Decode</button>
+                </div>
+            </div>
+        </div>
 
-    <section>
-        <h2>Decode ID</h2>
-        <label for="idInput"></label>
-        <input type="text" id="idInput" placeholder="e.g. jR"/>
-        <button id="decodeBtn">Decode</button>
-        <p>Decoded Number: <span id="decoded"></span></p>
-    </section>
+        <div class="results-panel">
+            <div class="result-item">
+                <h3 class="result-title">Encoded ID</h3>
+                <div class="result-box">
+                    <span id="encoded" class="result-text"></span>
+                    <div class="result-actions">
+                        <button class="icon-btn" id="useEncodedBtn" aria-label="Use as input to decode">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                                <path d="m12 8 4 4-4 4"></path>
+                                <path d="M8 12h8"></path>
+                            </svg>
+                        </button>
+                        <button class="icon-btn copy-btn" id="copyEncoded" aria-label="Copy encoded ID">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span class="copy-tooltip">Copied!</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="result-item">
+                <h3 class="result-title">Decoded Number</h3>
+                <div class="result-box">
+                    <span id="decoded" class="result-text"></span>
+                    <div class="result-actions">
+                        <button class="icon-btn" id="useDecodedBtn" aria-label="Use as input to encode">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                                <path d="m12 8 4 4-4 4"></path>
+                                <path d="M8 12h8"></path>
+                            </svg>
+                        </button>
+                        <button class="icon-btn copy-btn" id="copyDecoded" aria-label="Copy decoded number">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span class="copy-tooltip">Copied!</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 </div>
 
 <script src="wasm_exec.js"></script>

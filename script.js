@@ -1,95 +1,109 @@
 // --- 1. Start WebAssembly loading immediately ---
-// This allows the browser to fetch and compile the WASM file in parallel
-// with parsing the HTML, which is much faster.
 const go = new Go();
 const wasmPromise = WebAssembly.instantiateStreaming(fetch("sqids.wasm"), go.importObject);
 
 // --- 2. Create a promise that resolves when the DOM is ready ---
 const domReadyPromise = new Promise(resolve => {
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", resolve);
+        document.addEventListener("DOMContentLoaded", resolve, {once: true});
     } else {
         resolve();
     }
 });
 
-// --- 3. Use Promise.all to synchronize both operations ---
-// The code inside .then() will only run after the WASM module is ready AND the DOM is ready.
+// --- 3. Run after WASM and DOM are both ready ---
 Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
-    // Run the WASM instance
     go.run(wasmResult.instance);
     console.log("WASM Module and DOM are both ready.");
 
-    // --- All setup code that depends on WASM and the DOM goes here ---
+    // --- Application State ---
+    let state = {
+        sourceMode: 'number', targetMode: 'sqid'
+    };
 
-    // DOM Element Selection
-    const numberInput = document.getElementById("numberInput");
-    const encodeBtn = document.getElementById("encodeBtn");
-    const encodedSpan = document.getElementById("encoded");
-    const copyEncodedBtn = document.getElementById("copyEncoded");
-    const useEncodedBtn = document.getElementById("useEncodedBtn");
+    // --- DOM Element Selection ---
+    const sourceInput = document.getElementById("sourceInput");
+    const outputDiv = document.getElementById("output");
+    const outputContainer = document.getElementById("output-container");
+    const panelInput = document.getElementById("panel-input");
+    const swapBtn = document.getElementById("swapBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const sourceModeTabs = document.getElementById("source-mode-tabs");
+    const charCount = document.getElementById("charCount");
 
-    const idInput = document.getElementById("idInput");
-    const decodeBtn = document.getElementById("decodeBtn");
-    const decodedSpan = document.getElementById("decoded");
-    const copyDecodedBtn = document.getElementById("copyDecoded");
-    const useDecodedBtn = document.getElementById("useDecodedBtn");
+    // --- Event Listeners ---
+    sourceInput.addEventListener("input", handleConversion);
+    sourceInput.addEventListener("focus", () => panelInput.classList.add('focused'));
+    sourceInput.addEventListener("blur", () => panelInput.classList.remove('focused'));
+    swapBtn.addEventListener("click", handleSwap);
+    copyBtn.addEventListener("click", () => copyToClipboard(outputDiv.textContent, copyBtn));
 
-    // Event Listeners
-    encodeBtn.addEventListener("click", handleEncode);
-    numberInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") handleEncode();
-    });
-
-    decodeBtn.addEventListener("click", handleDecode);
-    idInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") handleDecode();
-    });
-
-    useEncodedBtn.addEventListener("click", () => {
-        const encodedValue = encodedSpan.textContent;
-        if (encodedValue && encodedValue !== "(invalid)") {
-            idInput.value = encodedValue;
-            handleDecode();
+    sourceModeTabs.addEventListener("click", (e) => {
+        if (e.target.matches(".mode-tab")) {
+            state.sourceMode = e.target.dataset.mode;
+            state.targetMode = state.sourceMode === 'number' ? 'sqid' : 'number';
+            updateUI();
+            handleConversion();
         }
     });
 
-    useDecodedBtn.addEventListener("click", () => {
-        const decodedValue = decodedSpan.textContent;
-        if (decodedValue && decodedValue !== "(invalid)") {
-            numberInput.value = decodedValue;
-            handleEncode();
-        }
-    });
+    // --- Core Functions ---
+    function handleConversion() {
+        const inputText = sourceInput.value.trim();
+        outputContainer.classList.toggle('input-has-text', inputText.length > 0);
+        charCount.textContent = `${sourceInput.value.length} / 5000`;
 
-    copyEncodedBtn.addEventListener("click", () => copyToClipboard(encodedSpan.textContent, copyEncodedBtn));
-    copyDecodedBtn.addEventListener("click", () => copyToClipboard(decodedSpan.textContent, copyDecodedBtn));
+        outputDiv.innerHTML = '';
+        outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
 
-    // Core Functions
-    function handleEncode() {
-        const numStr = numberInput.value;
-        if (!numStr.trim()) {
-            encodedSpan.textContent = "";
-            return;
+        if (!inputText) return;
+
+        let result;
+        let error = null;
+
+        if (state.sourceMode === 'number') {
+            if (!/^\d+$/.test(inputText)) {
+                error = "Input must be a valid positive number.";
+            } else {
+                result = encodeSqid(inputText);
+            }
+        } else { // sourceMode is 'sqid'
+            result = decodeSqid(inputText);
+            if (!result) {
+                error = "Not a valid Sqid. Check for invalid characters or length.";
+            }
         }
-        const id = encodeSqid(numStr);
-        encodedSpan.textContent = id || "(invalid)";
+
+        if (error) {
+            outputDiv.textContent = error;
+            outputDiv.classList.add('error-box');
+        } else {
+            outputDiv.textContent = result;
+            outputDiv.classList.remove('error-box');
+        }
     }
 
-    function handleDecode() {
-        const id = idInput.value;
-        if (!id.trim()) {
-            decodedSpan.textContent = "";
-            return;
-        }
-        const num = decodeSqid(id);
-        decodedSpan.textContent = num || "(invalid)";
+    function handleSwap() {
+        const currentOutput = !outputDiv.classList.contains('error-box') ? outputDiv.textContent : '';
+        [state.sourceMode, state.targetMode] = [state.targetMode, state.sourceMode];
+        sourceInput.value = currentOutput;
+        updateUI();
+        handleConversion();
+        sourceInput.focus();
+    }
+
+    function updateUI() {
+        document.querySelectorAll('.mode-tab').forEach(tab => {
+            const isSourceTab = tab.parentElement.id === 'source-mode-tabs';
+            const isActive = isSourceTab ? tab.dataset.mode === state.sourceMode : tab.dataset.mode === state.targetMode;
+            tab.classList.toggle('active', isActive);
+        });
+
+        sourceInput.placeholder = state.sourceMode === 'number' ? "Enter a number to encode..." : "Enter a Sqid to decode...";
     }
 
     function copyToClipboard(text, button) {
-        if (!text || text === "(invalid)") {
-            return;
-        }
+        if (!text || outputDiv.classList.contains('error-box')) return;
         navigator.clipboard.writeText(text).then(() => {
             button.classList.add("copied");
             setTimeout(() => {
@@ -97,13 +111,13 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
             }, 2000);
         }).catch(err => {
             console.error('Failed to copy text: ', err);
-            alert('Failed to copy text.');
         });
     }
 
+    // --- Initial UI Setup on Load ---
+    updateUI();
+
 }).catch((err) => {
-    // This will catch errors from either WASM loading or DOM readiness
     console.error("Failed to initialize the application:", err);
-    // You could display a general error message to the user on the page
-    document.body.innerHTML = `<p style="color: red; text-align: center; padding-top: 50px;"><strong>Error:</strong> Application could not start. Please check the console.</p>`;
+    document.body.innerHTML = `<p style="color: red; text-align: center; padding: 50px;"><strong>Error:</strong> Application could not start. Please check the console.</p>`;
 });

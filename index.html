@@ -4,107 +4,95 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description"
-          content="A modern and intuitive web application for encoding and decoding numbers using the Sqids algorithm, powered by WebAssembly."/>
+          content="An intuitive web application to encode numbers into SQIDs and decode SQIDs back into numbers, powered by WebAssembly."/>
     <meta name="author" content="Farid"/>
-    <meta property="og:title" content="Sqids WebAssembly Interactive Tool"/>
-    <meta property="og:description"
-          content="Easily encode and decode numbers with this interactive Sqids WebAssembly application."/>
-    <meta property="og:type" content="website"/>
-    <meta property="og:image" content="path_to_your_og_image.jpg"/>
-    <title>Sqids WASM Interactive Tool</title>
+    <title>SQIDs Interactive Tool</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-<div class="container">
-    <header class="header">
-        <h1 class="title">Sqids Encoder & Decoder</h1>
-        <p class="subtitle">A fast and intuitive tool powered by WebAssembly</p>
-        <a href="https://github.com/faridgh1991/sqid-wasm" target="_blank"
-           class="github-link" aria-label="View on GitHub">
-            <svg class="github-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+
+<div class="app-container">
+    <header class="app-header">
+        <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+                <path d="M12 2.5a9.5 9.5 0 1 1-9.5 9.5A9.51 9.51 0 0 1 12 2.5z"/>
+                <path d="m9 10 2 2 2-2"/>
+                <path d="M12 12v4"/>
+                <path d="m15 10-2 2-2-2"/>
+            </svg>
+            <span>SQID Interactive Tool</span>
+        </div>
+        <a href="https://github.com/faridgh1991/sqid-wasm" target="_blank" class="github-link"
+           aria-label="View source on GitHub">
+            <svg class="github-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"
                  xmlns="http://www.w3.org/2000/svg">
-                <path
-                        d="M12 2C6.475 2 2 6.475 2 12C2 16.425 4.8625 20.1625 8.8375 21.4875C9.3375 21.575 9.525 21.275 9.525 21.0125C9.525 20.775 9.5125 19.9875 9.5125 19.15C7.55 19.5625 6.9125 18.2875 6.7375 17.7625C6.6375 17.5 6.225 16.65 5.8625 16.4C5.575 16.2125 5.1 15.6875 5.85 15.675C6.525 15.6625 7.0125 16.275 7.1875 16.55C7.95 17.8875 9.2875 17.475 9.8125 17.2375C9.8875 16.6875 10.1125 16.3 10.3375 16.1C8.3625 15.875 6.2625 15.1125 6.2625 11.6375C6.2625 10.6375 6.625 9.825 7.1875 9.1875C7.0875 8.95 6.8125 8.0875 7.275 7.0375C7.275 7.0375 7.95 6.8125 9.525 7.825C10.1625 7.65 10.8375 7.5625 11.5125 7.5625C12.1875 7.5625 12.8625 7.65 13.5 7.825C15.075 6.8125 15.75 7.0375 15.75 7.0375C16.2125 8.0875 15.9375 8.95 15.8375 9.1875C16.4 9.825 16.7625 10.6375 16.7625 11.6375C16.7625 15.125 14.6625 15.875 12.6875 16.1C12.975 16.3625 13.25 16.85 13.25 17.6C13.25 18.6875 13.2375 19.5375 13.2375 19.8125C13.2375 20.075 13.425 20.2875 13.9375 20.2C18.1375 19.1625 21 15.8 21 11.5C21 6.8125 16.9875 2.5 12 2.5"
-                        transform="translate(0.5, 0.5)" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                        stroke-linejoin="round"></path>
+                <path d="M12 2C6.475 2 2 6.475 2 12c0 4.418 2.865 8.165 6.839 9.49.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.03-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.82c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.378.203 2.398.1 2.65.64.7 1.03 1.595 1.03 2.688 0 3.848-2.338 4.695-4.566 4.942.359.308.678.92.678 1.855 0 1.338-.012 2.419-.012 2.745 0 .267.18.577.688.48A10.001 10.001 0 0 0 22 12c0-5.525-4.475-10-10-10z"/>
             </svg>
         </a>
     </header>
 
-    <main class="main-content">
-        <div class="io-panel">
-            <div class="input-group">
-                <label for="numberInput" class="input-label">Number to Encode</label>
-                <div class="input-wrapper">
-                    <input type="number" id="numberInput" class="input-field" placeholder="e.g., 123456789">
-                    <button id="encodeBtn" class="action-btn">Encode</button>
-                </div>
-            </div>
+    <div class="mode-selector">
+        <div class="mode-tabs" id="source-mode-tabs">
+            <button class="mode-tab" data-mode="number">Number</button>
+            <button class="mode-tab" data-mode="sqid">SQID</button>
+        </div>
+        <button class="swap-btn" id="swapBtn" aria-label="Swap source and target modes">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="20" y1="12" x2="4" y2="12"></line>
+                <polyline points="14 6 20 12 14 18"></polyline>
+                <line x1="4" y1="12" x2="20" y2="12"></line>
+                <polyline points="10 18 4 12 10 6"></polyline>
+            </svg>
+        </button>
+        <div class="mode-tabs" id="target-mode-tabs">
+            <button class="mode-tab" data-mode="number" disabled>Number</button>
+            <button class="mode-tab" data-mode="sqid" disabled>SQID</button>
+        </div>
+    </div>
 
-            <div class="input-group">
-                <label for="idInput" class="input-label">ID to Decode</label>
-                <div class="input-wrapper">
-                    <input type="text" id="idInput" class="input-field" placeholder="e.g., rDOOFW">
-                    <button id="decodeBtn" class="action-btn">Decode</button>
-                </div>
+    <main class="panels-container">
+        <div id="panel-input" class="panel panel-input">
+            <label for="sourceInput"></label>
+            <textarea id="sourceInput" class="text-area" maxlength="5000"
+                      placeholder="Enter a number to encode..."></textarea>
+            <div class="panel-toolbar">
+                <span class="char-count" id="charCount">0 / 5000</span>
             </div>
         </div>
 
-        <div class="results-panel">
-            <div class="result-item">
-                <h3 class="result-title">Encoded ID</h3>
-                <div class="result-box">
-                    <span id="encoded" class="result-text"></span>
-                    <div class="result-actions">
-                        <button class="icon-btn" id="useEncodedBtn" aria-label="Use as input to decode">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
-                                <path d="m12 8 4 4-4 4"></path>
-                                <path d="M8 12h8"></path>
-                            </svg>
-                        </button>
-                        <button class="icon-btn copy-btn" id="copyEncoded" aria-label="Copy encoded ID">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                            <span class="copy-tooltip">Copied!</span>
-                        </button>
-                    </div>
+        <div class="panel panel-output">
+            <div id="output-container">
+                <div id="empty-state" class="empty-state">
+                    <p>Output will appear here</p>
                 </div>
+                <div id="output" class="text-area result-box" aria-live="polite"></div>
             </div>
-            <div class="result-item">
-                <h3 class="result-title">Decoded Number</h3>
-                <div class="result-box">
-                    <span id="decoded" class="result-text"></span>
-                    <div class="result-actions">
-                        <button class="icon-btn" id="useDecodedBtn" aria-label="Use as input to encode">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
-                                <path d="m12 8 4 4-4 4"></path>
-                                <path d="M8 12h8"></path>
-                            </svg>
-                        </button>
-                        <button class="icon-btn copy-btn" id="copyDecoded" aria-label="Copy decoded number">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                            <span class="copy-tooltip">Copied!</span>
-                        </button>
+            <div class="panel-toolbar">
+                <div class="info-container">
+                    <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                    <div class="info-tooltip">SQIDs are short, unique, and YouTube-like IDs generated from numbers.
                     </div>
                 </div>
+                <button class="icon-btn copy-btn" id="copyBtn" aria-label="Copy result">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span class="copy-tooltip">Copied!</span>
+                </button>
             </div>
         </div>
     </main>

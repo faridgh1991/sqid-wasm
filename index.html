@@ -3,22 +3,85 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="description"
-          content="An intuitive web application to encode numbers into SQIDs and decode SQIDs back into numbers, powered by WebAssembly."/>
-    <meta name="author" content="Farid"/>
-    <title>SQIDs Interactive Tool</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://farid-ghr.pro/sqid-wasm/">
+
+    <!-- SEO Meta -->
+    <meta name="description" content="SQID-WASM: Interactive WebAssembly tool for generating short, unique, YouTube-style IDs from numbers. Built with Go and WASM—encode/decode SQIDs online for free by Farid Ghoorchian."/>
+    <meta name="keywords" content="SQID, unique ID generator, WebAssembly, WASM, Go, short IDs, YouTube ID, encode decode numbers, developer tool"/>
+    <meta name="author" content="Farid Ghoorchian"/>
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+
+    <!-- Open Graph / Social -->
+    <meta property="og:title" content="SQID-WASM: Generate Short Unique IDs | WebAssembly Tool by Farid Ghoorchian"/>
+    <meta property="og:description" content="An intuitive web app to encode numbers into SQIDs and decode SQIDs back into numbers, powered by WebAssembly. Try it live—built with Go for developers."/>
+    <meta property="og:image" content="https://farid-ghr.pro/logo.jpg"/>
+    <meta property="og:image:type" content="image/jpeg"/>
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="630"/>
+    <meta property="og:url" content="https://farid-ghr.pro/sqid-wasm/"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:site_name" content="Farid Ghoorchian"/>
+    <meta property="og:locale" content="en_US"/>
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:site" content="@faridgh1991"/>
+    <meta name="twitter:creator" content="@faridgh1991"/>
+    <meta name="twitter:title" content="SQID-WASM: Generate Short Unique IDs | WebAssembly Tool by Farid Ghoorchian"/>
+    <meta name="twitter:description" content="An intuitive web app to encode numbers into SQIDs and decode SQIDs back into numbers, powered by WebAssembly. Try it live—built with Go for developers."/>
+    <meta name="twitter:image" content="https://farid-ghr.pro/logo.jpg"/>
+
+    <!-- Hreflang for multilingual support (if Persian version added later) -->
+    <link rel="alternate" hreflang="en" href="https://farid-ghr.pro/sqid-wasm/">
+
+    <title>SQID-WASM: Generate Short Unique IDs | WebAssembly Tool by Farid Ghoorchian</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css"/>
+
+    <!-- Structured Data (JSON-LD for WebApplication Schema) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "SQID-WASM",
+      "alternateName": "SQID Interactive Tool",
+      "description": "Interactive WebAssembly tool for generating and decoding short, unique, YouTube-style IDs from numbers. Built with Go and compiled to WASM for efficient performance.",
+      "url": "https://farid-ghr.pro/sqid-wasm/",
+      "author": {
+        "@type": "Person",
+        "name": "Farid Ghoorchian",
+        "url": "https://farid-ghr.pro/"
+      },
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "featureList": [
+        "Encode numbers to SQIDs",
+        "Decode SQIDs to numbers",
+        "WebAssembly-powered for speed"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "sameAs": "https://github.com/faridgh1991/sqid-wasm"
+    }
+    </script>
 </head>
 <body>
 
-<div class="app-container">
+<div class="app-container" role="main">
     <header class="app-header">
         <div class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
                 <path d="M12 2.5a9.5 9.5 0 1 1-9.5 9.5A9.51 9.51 0 0 1 12 2.5z"/>
                 <path d="m9 10 2 2 2-2"/>
@@ -27,10 +90,10 @@
             </svg>
             <span>SQID Interactive Tool</span>
         </div>
-        <a href="https://github.com/faridgh1991/sqid-wasm" target="_blank" class="github-link"
+        <a href="https://github.com/faridgh1991/sqid-wasm" target="_blank" rel="noopener noreferrer" class="github-link"
            aria-label="View source on GitHub">
             <svg class="github-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"
-                 xmlns="http://www.w3.org/2000/svg">
+                 xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path d="M12 2C6.475 2 2 6.475 2 12c0 4.418 2.865 8.165 6.839 9.49.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.03-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.82c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.378.203 2.398.1 2.65.64.7 1.03 1.595 1.03 2.688 0 3.848-2.338 4.695-4.566 4.942.359.308.678.92.678 1.855 0 1.338-.012 2.419-.012 2.745 0 .267.18.577.688.48A10.001 10.001 0 0 0 22 12c0-5.525-4.475-10-10-10z"/>
             </svg>
         </a>
@@ -43,7 +106,7 @@
         </div>
         <button class="swap-btn" id="swapBtn" aria-label="Swap source and target modes">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <line x1="20" y1="12" x2="4" y2="12"></line>
                 <polyline points="14 6 20 12 14 18"></polyline>
                 <line x1="4" y1="12" x2="20" y2="12"></line>
@@ -58,11 +121,12 @@
 
     <main class="panels-container">
         <div id="panel-input" class="panel panel-input">
-            <label for="sourceInput"></label>
+            <label for="sourceInput" class="visually-hidden">Input</label>
             <textarea id="sourceInput" class="text-area" maxlength="5000"
-                      placeholder="Enter a number to encode..."></textarea>
+                      placeholder="Enter a number to encode..." aria-describedby="input-help"></textarea>
             <div class="panel-toolbar">
                 <span class="char-count" id="charCount">0 / 5000</span>
+                <small id="input-help" class="visually-hidden">Maximum 5000 characters</small>
             </div>
         </div>
 
@@ -77,7 +141,7 @@
                 <div class="info-container">
                     <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                         stroke-linejoin="round">
+                         stroke-linejoin="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="10"/>
                         <line x1="12" y1="16" x2="12" y2="12"/>
                         <line x1="12" y1="8" x2="12.01" y2="8"/>
@@ -87,7 +151,7 @@
                 </div>
                 <button class="icon-btn copy-btn" id="copyBtn" aria-label="Copy result">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                     </svg>

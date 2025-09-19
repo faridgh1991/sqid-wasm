@@ -1,28 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>SQID-WASM: Generate Short Unique IDs | WebAssembly Tool by Farid Ghoorchian</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-
+    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-T6VNL7NBQW"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-T6VNL7NBQW');
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'G-T6VNL7NBQW');
     </script>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <meta name="description" content="SQID-WASM: Interactive WebAssembly tool for generating short, unique, YouTube-style IDs from numbers. Built with Go and WASM—encode/decode SQIDs online for free by Farid Ghoorchian."/>
-    <meta name="keywords" content="SQID, unique ID generator, WebAssembly, WASM, Go, short IDs, YouTube ID, encode decode numbers, developer tool"/>
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://farid-ghr.pro/sqid-wasm/">
+
+    <!-- SEO Meta -->
+    <meta name="description"
+          content="SQID-WASM: Interactive WebAssembly tool for generating short, unique, YouTube-style IDs from numbers. Built with Go and WASM—encode/decode SQIDs online for free by Farid Ghoorchian."/>
+    <meta name="keywords"
+          content="SQID, unique ID generator, WebAssembly, WASM, Go, short IDs, YouTube ID, encode decode numbers, developer tool"/>
     <meta name="author" content="Farid Ghoorchian"/>
-    <meta name="robots" content="index, follow"/>
-    <link rel="canonical" href="https://farid-ghr.pro/sqid-wasm/"/>
-    <link rel="alternate" hreflang="en" href="https://farid-ghr.pro/sqid-wasm/"/>
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
 
+    <!-- Open Graph / Social -->
     <meta property="og:title" content="SQID-WASM: Generate Short Unique IDs | WebAssembly Tool by Farid Ghoorchian"/>
-    <meta property="og:description" content="An intuitive web app to encode numbers into SQIDs and decode SQIDs back into numbers, powered by WebAssembly. Try it live—built with Go for developers."/>
+    <meta property="og:description"
+          content="An intuitive web app to encode numbers into SQIDs and decode SQIDs back into numbers, powered by WebAssembly. Try it live—built with Go for developers."/>
     <meta property="og:image" content="https://farid-ghr.pro/logo.jpg"/>
     <meta property="og:image:type" content="image/jpeg"/>
     <meta property="og:image:width" content="1200"/>
@@ -32,131 +43,63 @@
     <meta property="og:site_name" content="Farid Ghoorchian"/>
     <meta property="og:locale" content="en_US"/>
 
+    <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image"/>
     <meta name="twitter:site" content="@faridgh1991"/>
     <meta name="twitter:creator" content="@faridgh1991"/>
     <meta name="twitter:title" content="SQID-WASM: Generate Short Unique IDs | WebAssembly Tool by Farid Ghoorchian"/>
-    <meta name="twitter:description" content="An intuitive web app to encode numbers into SQIDs and decode SQIDs back into numbers, powered by WebAssembly. Try it live—built with Go for developers."/>
+    <meta name="twitter:description"
+          content="An intuitive web app to encode numbers into SQIDs and decode SQIDs back into numbers, powered by WebAssembly. Try it live—built with Go for developers."/>
     <meta name="twitter:image" content="https://farid-ghr.pro/logo.jpg"/>
+
+    <!-- Hreflang for multilingual support (if Persian version added later) -->
+    <link rel="alternate" hreflang="en" href="https://farid-ghr.pro/sqid-wasm/">
+
+    <title>SQID-WASM: Generate Short Unique IDs | WebAssembly Tool by Farid Ghoorchian</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css"/>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              'primary-blue': '#1a73e8',
-              'primary-text': '#3c4043',
-              'secondary-text': '#5f6368',
-              'error-text': '#d93025',
-              'background': '#f0f2f5',
-              'panel': '#ffffff',
-              'output-panel': '#f0f0f0',
-              'border': '#dadce0',
-              'border-active': '#1a73e8',
-              'hover': '#f0f2f5'
-            },
-            fontFamily: {
-              'roboto': ['Roboto', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica', 'Arial', 'sans-serif']
-            },
-            animation: {
-              'fade-in': 'fadeIn 0.5s ease-out',
-              'result-fade-in': 'resultFadeIn 0.4s forwards'
-            },
-            keyframes: {
-              fadeIn: {
-                'from': { opacity: '0', transform: 'translateY(-10px)' },
-                'to': { opacity: '1', transform: 'translateY(0)' }
-              },
-              resultFadeIn: {
-                'from': { opacity: '0', transform: 'translateY(5px)' },
-                'to': { opacity: '1', transform: 'translateY(0)' }
-              }
-            }
-          }
-        }
-      }
-    </script>
-
+    <!-- Structured Data (JSON-LD for WebApplication Schema) -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "SQID-WASM",
-      "alternateName": "SQID Interactive Tool",
-      "description": "Interactive WebAssembly tool for generating and decoding short, unique, YouTube-style IDs from numbers. Built with Go and compiled to WASM for efficient performance.",
-      "url": "https://farid-ghr.pro/sqid-wasm/",
-      "author": {
-        "@type": "Person",
-        "name": "Farid Ghoorchian",
-        "url": "https://farid-ghr.pro/"
-      },
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Any",
-      "featureList": [
-        "Encode numbers to SQIDs",
-        "Decode SQIDs to numbers",
-        "WebAssembly-powered for speed"
-      ],
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "sameAs": "https://github.com/faridgh1991/sqid-wasm"
-    }
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "SQID-WASM",
+            "alternateName": "SQID Interactive Tool",
+            "description": "Interactive WebAssembly tool for generating and decoding short, unique, YouTube-style IDs from numbers. Built with Go and compiled to WASM for efficient performance.",
+            "url": "https://farid-ghr.pro/sqid-wasm/",
+            "author": {
+                "@type": "Person",
+                "name": "Farid Ghoorchian",
+                "url": "https://farid-ghr.pro/"
+            },
+            "applicationCategory": "DeveloperApplication",
+            "operatingSystem": "Any",
+            "featureList": [
+                "Encode numbers to SQIDs",
+                "Decode SQIDs to numbers",
+                "WebAssembly-powered for speed"
+            ],
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+            },
+            "sameAs": "https://github.com/faridgh1991/sqid-wasm"
+        }
     </script>
-
-    <style>
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-      .swap-btn:hover {
-        transform: rotate(180deg);
-      }
-      .copy-tooltip {
-        visibility: hidden;
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-      .copy-btn.copied .copy-tooltip {
-        visibility: visible;
-        opacity: 1;
-      }
-      .info-tooltip {
-        visibility: hidden;
-        opacity: 0;
-        transition: opacity 0.3s, visibility 0.3s;
-      }
-      .info-container:hover .info-tooltip {
-        visibility: visible;
-        opacity: 1;
-      }
-      .input-has-text .empty-state {
-        opacity: 0;
-        visibility: hidden;
-      }
-    </style>
 </head>
-<body class="font-roboto bg-background text-primary-text flex justify-center items-start p-4 md:p-8 min-h-screen">
+<body>
 
-<div class="app-container w-full max-w-4xl animate-fade-in" role="main">
-    <header class="flex justify-between items-center mb-4 px-2">
-        <h1 class="flex items-center gap-3 text-xl font-medium text-secondary-text">
+<div class="app-container" role="main">
+    <header class="app-header">
+        <div class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 aria-hidden="true">
                 <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
                 <path d="M12 2.5a9.5 9.5 0 1 1-9.5 9.5A9.51 9.51 0 0 1 12 2.5z"/>
                 <path d="m9 10 2 2 2-2"/>
@@ -164,9 +107,8 @@
                 <path d="m15 10-2 2-2-2"/>
             </svg>
             <span>SQID Interactive Tool</span>
-        </h1>
-        <a href="https://github.com/faridgh1991/sqid-wasm" target="_blank" rel="noopener noreferrer"
-           class="text-secondary-text hover:text-primary-text transition-colors duration-200"
+        </div>
+        <a href="https://github.com/faridgh1991/sqid-wasm" target="_blank" rel="noopener noreferrer" class="github-link"
            aria-label="View source on GitHub">
             <svg class="github-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"
                  xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -175,126 +117,72 @@
         </a>
     </header>
 
-    <div class="flex justify-between items-center px-2 flex-wrap md:flex-col md:justify-center">
-        <div id="source-mode-tabs" class="flex">
-            <button class="px-4 py-3 text-sm font-medium border-b-4 border-transparent cursor-pointer text-secondary-text hover:text-primary-text transition-colors duration-200 mode-tab" data-mode="number">Number</button>
-            <button class="px-4 py-3 text-sm font-medium border-b-4 border-transparent cursor-pointer text-secondary-text hover:text-primary-text transition-colors duration-200 mode-tab" data-mode="sqid">SQID</button>
+    <div class="mode-selector">
+        <div class="mode-tabs" id="source-mode-tabs">
+            <button class="mode-tab" data-mode="number">Number</button>
+            <button class="mode-tab" data-mode="sqid">SQID</button>
         </div>
-        <button id="swapBtn" class="p-2 rounded-full cursor-pointer text-secondary-text hover:bg-hover transition-all duration-300 swap-btn" aria-label="Swap source and target modes">
+        <button class="swap-btn" id="swapBtn" aria-label="Swap source and target modes">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 aria-hidden="true">
                 <line x1="20" y1="12" x2="4" y2="12"></line>
                 <polyline points="14 6 20 12 14 18"></polyline>
                 <line x1="4" y1="12" x2="20" y2="12"></line>
                 <polyline points="10 18 4 12 10 6"></polyline>
             </svg>
         </button>
-        <div id="target-mode-tabs" class="flex">
-            <button class="px-4 py-3 text-sm font-medium border-b-4 border-transparent cursor-default text-secondary-text mode-tab" data-mode="number" disabled>Number</button>
-            <button class="px-4 py-3 text-sm font-medium border-b-4 border-transparent cursor-default text-secondary-text mode-tab" data-mode="sqid" disabled>SQID</button>
+        <div class="mode-tabs" id="target-mode-tabs">
+            <button class="mode-tab" data-mode="number" disabled>Number</button>
+            <button class="mode-tab" data-mode="sqid" disabled>SQID</button>
         </div>
     </div>
 
-    <main class="flex gap-6 mt-2 md:flex-col">
-        <div id="panel-input" class="flex-1 flex flex-col h-72 bg-panel border-2 border-border rounded-xl transition-colors duration-300 focus-within:border-border-active">
+    <main class="panels-container">
+        <div id="panel-input" class="panel panel-input">
             <label for="sourceInput" class="visually-hidden">Input</label>
-            <textarea id="sourceInput" class="flex-grow w-full p-5 text-xl bg-transparent border-none rounded-t-xl resize-none focus:outline-none"
-                      maxlength="5000" placeholder="Enter a number to encode..." aria-describedby="input-help"></textarea>
-            <div class="flex justify-between items-center border-t border-gray-200 min-h-12 px-4 py-2">
-                <span id="charCount" class="text-xs text-secondary-text">0 / 5000</span>
+            <textarea id="sourceInput" class="text-area" maxlength="5000"
+                      placeholder="Enter a number to encode..." aria-describedby="input-help"></textarea>
+            <div class="panel-toolbar">
+                <span class="char-count" id="charCount">0 / 5000</span>
                 <small id="input-help" class="visually-hidden">Maximum 5000 characters</small>
             </div>
         </div>
 
-        <div class="flex-1 flex flex-col h-72 bg-output-panel border-2 border-border rounded-xl">
-            <div id="output-container" class="relative flex-grow flex flex-col p-2">
-                <div id="empty-state" class="absolute top-4 left-5 text-secondary-text text-xl transition-opacity duration-300 empty-state">
+        <div class="panel panel-output">
+            <div id="output-container">
+                <div id="empty-state" class="empty-state">
                     <p>Output will appear here</p>
                 </div>
-                <div id="output" class="flex-grow w-full p-5 text-xl bg-transparent border-none resize-none rounded-t-xl opacity-0 animate-result-fade-in pt-2 text-primary-text font-normal break-all" aria-live="polite"></div>
+                <div id="output" class="text-area result-box" aria-live="polite"></div>
             </div>
-            <div class="flex justify-between items-center border-t border-gray-200 min-h-12 px-4 py-2">
-                <div class="relative flex items-center info-container">
-                    <svg class="text-secondary-text cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <div class="panel-toolbar">
+                <div class="info-container">
+                    <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                         stroke-linejoin="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="10"/>
                         <line x1="12" y1="16" x2="12" y2="12"/>
                         <line x1="12" y1="8" x2="12.01" y2="8"/>
                     </svg>
-                    <div class="absolute bg-primary-text text-white text-center rounded-md px-3 py-2 bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-56 text-xs leading-6 z-10 info-tooltip">
-                        SQIDs are short, unique, and YouTube-like IDs generated from numbers.
+                    <div class="info-tooltip">SQIDs are short, unique, and YouTube-like IDs generated from numbers.
                     </div>
                 </div>
-                <button id="copyBtn" class="p-2 relative flex items-center justify-center rounded-full cursor-pointer text-secondary-text hover:bg-hover transition-colors duration-200 copy-btn" aria-label="Copy result">
+                <button class="icon-btn copy-btn" id="copyBtn" aria-label="Copy result">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         aria-hidden="true">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                     </svg>
-                    <span class="absolute bg-primary-text text-white text-center rounded px-3 py-1 bottom-full left-1/2 transform -translate-x-1/2 mb-2 text-xs whitespace-nowrap copy-tooltip">Copied!</span>
+                    <span class="copy-tooltip">Copied!</span>
                 </button>
             </div>
         </div>
     </main>
 </div>
 
-<script src="wasm_exec.js" defer></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const sourceTabs = document.getElementById('source-mode-tabs');
-    const sourceInput = document.getElementById('sourceInput');
-    const charCount = document.getElementById('charCount');
-    const appContainer = document.querySelector('.app-container');
-    const copyBtn = document.getElementById('copyBtn');
-    const output = document.getElementById('output');
-
-    // --- Initialize first tab as active ---
-    const firstTab = sourceTabs.querySelector('.mode-tab[data-mode="number"]');
-    if (firstTab) {
-        firstTab.classList.add('text-primary-blue', 'border-primary-blue');
-        firstTab.classList.remove('text-secondary-text');
-    }
-
-    // --- Handle tab active states ---
-    sourceTabs.addEventListener('click', (e) => {
-        const clickedTab = e.target.closest('.mode-tab');
-        if (!clickedTab || clickedTab.disabled) return;
-        
-        sourceTabs.querySelectorAll('.mode-tab').forEach(t => {
-            t.classList.remove('text-primary-blue', 'border-primary-blue');
-            t.classList.add('text-secondary-text');
-        });
-
-        clickedTab.classList.add('text-primary-blue', 'border-primary-blue');
-        clickedTab.classList.remove('text-secondary-text');
-        
-        // You would add logic here to handle the mode change
-    });
-
-    // --- Handle character count and empty state ---
-    sourceInput.addEventListener('input', function() {
-        charCount.textContent = `${this.value.length} / 5000`;
-        if (this.value.length > 0) {
-            appContainer.classList.add('input-has-text');
-        } else {
-            appContainer.classList.remove('input-has-text');
-        }
-    });
-
-    // --- Handle copy functionality ---
-    copyBtn.addEventListener('click', function() {
-        if (output.textContent.trim()) {
-            navigator.clipboard.writeText(output.textContent).then(() => {
-                this.classList.add('copied');
-                setTimeout(() => {
-                    this.classList.remove('copied');
-                }, 2000);
-            });
-        }
-    });
-});
-</script>
-<script src="script.js" defer></script>
-
+<script src="wasm_exec.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

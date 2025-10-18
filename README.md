@@ -1,6 +1,6 @@
 # sqid-wasm
 
-[![TinyGo](https://img.shields.io/badge/TinyGo-0.30.0+-00ADD8?logo=go)](https://tinygo.org/)
+[![TinyGo](https://img.shields.io/badge/TinyGo-0.39.0+-00ADD8?logo=go)](https://tinygo.org/)
 [![WebAssembly](https://img.shields.io/badge/WebAssembly-Enabled-654FF0?logo=webassembly)](https://webassembly.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![GoDoc](https://godoc.org/github.com/faridgh1991/sqid-wasm?status.svg)](https://godoc.org/github.com/faridgh1991/sqid-wasm)
@@ -23,7 +23,7 @@ A simple Go WebAssembly demo using [Sqids](https://sqids.org/go) to encode and d
 
 ### Prerequisites
 
-* [TinyGo 0.30.0+](https://tinygo.org/getting-started/)
+* [TinyGo 0.39.0+](https://tinygo.org/getting-started/)
 * [Sqids for Go](https://github.com/sqids/sqids-go)
 
 ### Build

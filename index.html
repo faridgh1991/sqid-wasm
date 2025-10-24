@@ -26,9 +26,9 @@
 
     <!-- Meta -->
     <meta name="description"
-          content="SQID-WASM: Interactive WebAssembly tool for generating short, unique, YouTube-style IDs from numbers. Built with Go and WASM—encode/decode SQIDs online for free by Farid Ghoorchian."/>
+          content="SQID-WASM: Interactive WebAssembly tool for generating short, unique, URL-safe IDs from non-negative numbers, based on Sqids (sqids.org). Encode/decode online for free by Farid Ghoorchian."/>
     <meta name="keywords"
-          content="SQID, unique ID generator, WebAssembly, WASM, Go, short IDs, YouTube ID, encode decode numbers, developer tool"/>
+          content="Sqids, unique ID generator, WebAssembly, WASM, Go, short IDs, URL-safe IDs, encode decode numbers, developer tool"/>
     <meta name="author" content="Farid Ghoorchian"/>
     <meta name="robots" content="index, follow">
     <meta name="googlebot" content="index, follow">
@@ -36,7 +36,7 @@
     <!-- Open Graph / Social -->
     <meta property="og:title" content="SQID-WASM: Generate Short Unique IDs | WebAssembly Tool by Farid Ghoorchian"/>
     <meta property="og:description"
-          content="An intuitive web app to encode numbers into SQIDs and decode SQIDs back into numbers, powered by WebAssembly. Try it live—built with Go for developers."/>
+          content="An intuitive web app to encode non-negative numbers into short, URL-safe Sqids and decode back, powered by WebAssembly. Based on Sqids.org—built with Go for developers."/>
     <meta property="og:image" content="https://farid-ghr.pro/logo.jpg"/>
     <meta property="og:image:type" content="image/jpeg"/>
     <meta property="og:image:width" content="1200"/>
@@ -52,7 +52,7 @@
     <meta name="twitter:creator" content="@faridgh1991"/>
     <meta name="twitter:title" content="SQID-WASM: Generate Short Unique IDs | WebAssembly Tool by Farid Ghoorchian"/>
     <meta name="twitter:description"
-          content="An intuitive web app to encode numbers into SQIDs and decode SQIDs back into numbers, powered by WebAssembly. Try it live—built with Go for developers."/>
+          content="An intuitive web app to encode non-negative numbers into short, URL-safe Sqids and decode back, powered by WebAssembly. Based on Sqids.org—built with Go for developers."/>
     <meta name="twitter:image" content="https://farid-ghr.pro/logo.jpg"/>
 
     <!-- Hreflang for multilingual support (if Persian version added later) -->
@@ -72,7 +72,7 @@
             "@type": "WebApplication",
             "name": "SQID-WASM",
             "alternateName": "SQID Interactive Tool",
-            "description": "Interactive WebAssembly tool for generating and decoding short, unique, YouTube-style IDs from numbers. Built with Go and compiled to WASM for efficient performance.",
+            "description": "Interactive WebAssembly tool for generating and decoding short, unique, URL-safe IDs from non-negative numbers, based on Sqids (sqids.org). Built with Go and compiled to WASM for efficient performance.",
             "url": "https://farid-ghr.pro/sqid-wasm/",
             "author": {
                 "@type": "Person",
@@ -82,8 +82,8 @@
             "applicationCategory": "DeveloperApplication",
             "operatingSystem": "Any",
             "featureList": [
-                "Encode numbers to SQIDs",
-                "Decode SQIDs to numbers",
+                "Encode numbers to Sqids",
+                "Decode Sqids to numbers",
                 "WebAssembly-powered for speed"
             ],
             "offers": {
@@ -137,7 +137,8 @@
         <div id="panel-input" class="panel panel-input">
             <label for="sourceInput" class="visually-hidden">Input</label>
             <textarea id="sourceInput" class="text-area" maxlength="5000"
-                      placeholder="Enter a number to encode..." aria-describedby="input-help"></textarea>
+                      placeholder="Enter non-negative numbers to encode (e.g., 123)..."
+                      aria-describedby="input-help"></textarea>
             <div class="panel-toolbar">
                 <span class="char-count" id="charCount">0 / 5000</span>
                 <small id="input-help" class="visually-hidden">Maximum 5000 characters</small>
@@ -160,7 +161,7 @@
                         <line x1="12" y1="16" x2="12" y2="12"/>
                         <line x1="12" y1="8" x2="12.01" y2="8"/>
                     </svg>
-                    <div class="info-tooltip">SQIDs are short, unique, and YouTube-like IDs generated from numbers.
+                    <div class="info-tooltip">Based on Sqids: Short, unique, URL-safe IDs from numbers, no profanity.
                     </div>
                 </div>
                 <button class="icon-btn copy-btn" id="copyBtn" aria-label="Copy result">
@@ -175,7 +176,95 @@
             </div>
         </div>
     </main>
+
+    <!-- Collapsible sections for minimal view (closed by default) -->
+
+    <details class="intro-section">
+        <summary>What is SQID-WASM?</summary>
+        <p>SQID-WASM is a WebAssembly tool based on <a href="https://sqids.org/" target="_blank"
+                                                       rel="noopener noreferrer">Sqids</a> (pronounced "squids"), an
+            open-source library that generates short, unique, URL-safe identifiers from non-negative numbers. These IDs
+            can encode one or more numbers and avoid common profanity words.</p>
+        <p>Built with Go and running in your browser for privacy and speed. Ideal for visual IDs in projects.</p>
+    </details>
+
+    <details class="tutorial-section">
+        <summary>How to Use SQID-WASM</summary>
+        <ol>
+            <li>Select "Number" to encode or "SQID" to decode.</li>
+            <li>Enter non-negative number(s) or a Sqid string.</li>
+            <li>Use the swap button to toggle modes.</li>
+            <li>View and copy the result.</li>
+        </ol>
+        <h3>Examples</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Input (Number)</th>
+                <th>Output (Sqid)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>127</td>
+                <td>EwF</td>
+            </tr>
+            <tr>
+                <td>12345</td>
+                <td>A6da</td>
+            </tr>
+            <tr>
+                <td>117</td>
+                <td>6Vs</td>
+            </tr>
+            </tbody>
+        </table>
+    </details>
+
+    <details class="benefits-section">
+        <summary>Why Use Sqids?</summary>
+        <ul>
+            <li><strong>Good for</strong>: Encoding primary keys in databases, saving lookups by encoding multiple
+                objects, temporary login tokens (profanity-free, URL-safe).
+            </li>
+            <li><strong>Not good for</strong>: Sensitive data (not encryption), user IDs (may reveal count if alphabet
+                known).
+            </li>
+            <li><strong>Benefits</strong>: Short, unique IDs from numbers; consistent across versions; custom alphabet
+                support.
+            </li>
+        </ul>
+    </details>
+
+    <details class="faq-section">
+        <summary>Frequently Asked Questions</summary>
+        <details>
+            <summary>What numbers can I encode?</summary>
+            <p>Non-negative integers (uint64), single or multiple. Total encoded value up to very large, but IDs grow in
+                length.</p>
+        </details>
+        <details>
+            <summary>Is this secure for sensitive data?</summary>
+            <p>No, Sqids is not an encryption library—it's for visual, non-sensitive IDs.</p>
+        </details>
+        <details>
+            <summary>How does it differ from UUIDs?</summary>
+            <p>Sqids are shorter, derived from numbers, URL-safe, and profanity-free, but not random or secure like
+                UUIDs.</p>
+        </details>
+        <details>
+            <summary>Can I customize the alphabet?</summary>
+            <p>Yes, via shuffled alphabet for unique IDs—see Sqids docs for details.</p>
+        </details>
+    </details>
+
 </div>
+
+<footer class="app-footer">
+    <p>&copy; 2025 Farid Ghoorchian. Based on <a href="https://sqids.org/" target="_blank" rel="noopener noreferrer">Sqids</a>.
+        All rights reserved. <a href="https://farid-ghr.pro/">Home</a> | <a
+                href="https://github.com/faridgh1991">GitHub</a></p>
+</footer>
 
 <script src="wasm_exec.js"></script>
 <script src="script.js"></script>

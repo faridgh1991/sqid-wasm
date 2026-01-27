@@ -489,6 +489,20 @@ summary {
     }
 }
 
+#randomBtn {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #f5f5f5;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#randomBtn:hover {
+    background: #e8e8e8;
+}
+
 /* Accessibility */
 .visually-hidden {
     position: absolute !important;

@@ -252,7 +252,12 @@
                       placeholder="Enter non-negative numbers to encode (e.g., 123)..."
                       aria-describedby="input-help"></textarea>
             <div class="panel-toolbar">
-                <span class="char-count" id="charCount" aria-live="polite">0 / 5000</span>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button class="icon-btn" id="randomBtn" type="button" title="Generate random number">
+                        🎲 Random
+                    </button>
+                    <span class="char-count" id="charCount" aria-live="polite">0 / 5000</span>
+                </div>
                 <small id="input-help" class="visually-hidden">Maximum 5000 characters allowed</small>
             </div>
         </section>

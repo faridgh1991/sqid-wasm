@@ -30,6 +30,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     const copyBtn = document.getElementById("copyBtn");
     const sourceModeTabs = document.getElementById("source-mode-tabs");
     const charCount = document.getElementById("charCount");
+    const randomBtn = document.getElementById("randomBtn");
 
     // --- Event Listeners ---
     sourceInput.addEventListener("input", handleConversion);
@@ -37,6 +38,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     sourceInput.addEventListener("blur", () => panelInput.classList.remove('focused'));
     swapBtn.addEventListener("click", handleSwap);
     copyBtn.addEventListener("click", () => copyToClipboard(outputDiv.textContent, copyBtn));
+    randomBtn.addEventListener("click", handleRandomGenerate);
 
     sourceModeTabs.addEventListener("click", (e) => {
         if (e.target.matches(".mode-tab")) {
@@ -112,6 +114,29 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         }).catch(err => {
             console.error('Failed to copy text: ', err);
         });
+    }
+
+    function handleRandomGenerate() {
+        try {
+            const randomID = generateRandomID(); // from WASM
+            if (!randomID || randomID.toString().startsWith("Error")) {
+                throw new Error(randomID);
+            }
+
+            // Ensure we're in NUMBER → SQID mode
+            state.sourceMode = 'number';
+            state.targetMode = 'sqid';
+
+            sourceInput.value = randomID.toString();
+            updateUI();
+            handleConversion();
+            sourceInput.focus();
+
+        } catch (err) {
+            outputDiv.textContent = "Failed to generate random ID.";
+            outputDiv.classList.add('error-box');
+            console.error(err);
+        }
     }
 
     // --- Initial UI Setup on Load ---

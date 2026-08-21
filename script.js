@@ -45,21 +45,25 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
             state.sourceMode = e.target.dataset.mode;
             state.targetMode = state.sourceMode === 'number' ? 'sqid' : 'number';
             updateUI();
-            handleConversion();
+            handleConversion(true);
         }
     });
 
+    // --- Utility Functions ---
+    function debounce(func, wait) {
+        let timeout;
+        const debounced = function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+        debounced.cancel = function() {
+            clearTimeout(timeout);
+        };
+        return debounced;
+    }
+
     // --- Core Functions ---
-    function handleConversion() {
-        const inputText = sourceInput.value.trim();
-        outputContainer.classList.toggle('input-has-text', inputText.length > 0);
-        charCount.textContent = `${sourceInput.value.length} / 5000`;
-
-        outputDiv.innerHTML = '';
-        outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
-
-        if (!inputText) return;
-
+    const runConversion = (inputText) => {
         let result;
         let error = null;
 
@@ -83,6 +87,31 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
             outputDiv.textContent = result;
             outputDiv.classList.remove('error-box');
         }
+    };
+
+    const debouncedRunConversion = debounce(runConversion, 250); // ⚡ Bolt: Debounce WASM execution to improve typing performance
+
+    function handleConversion(immediate = false) {
+        const inputText = sourceInput.value.trim();
+        outputContainer.classList.toggle('input-has-text', inputText.length > 0);
+        charCount.textContent = `${sourceInput.value.length} / 5000`;
+
+        // Clear output only when input is empty to avoid flickering
+        if (!inputText) {
+            outputDiv.innerHTML = '';
+            outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
+            debouncedRunConversion.cancel();
+            return;
+        }
+
+        outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
+
+        if (immediate) {
+            debouncedRunConversion.cancel();
+            runConversion(inputText);
+        } else {
+            debouncedRunConversion(inputText);
+        }
     }
 
     function handleSwap() {
@@ -90,7 +119,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         [state.sourceMode, state.targetMode] = [state.targetMode, state.sourceMode];
         sourceInput.value = currentOutput;
         updateUI();
-        handleConversion();
+        handleConversion(true);
         sourceInput.focus();
     }
 
@@ -129,7 +158,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
 
             sourceInput.value = randomID.toString();
             updateUI();
-            handleConversion();
+            handleConversion(true);
             sourceInput.focus();
 
         } catch (err) {

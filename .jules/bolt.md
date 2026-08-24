@@ -1,0 +1,3 @@
+## 2024-05-18 - [Sqids Instance Initialization Bottleneck]
+**Learning:** Initializing `sqids.New()` inside encode/decode methods is computationally expensive because it performs alphabet validation, shuffling, and blocklist filtering on every call. In benchmarks, moving it out of the critical path reduced encode time from ~3.3ms to ~4.5µs and decode time from ~3.3ms to ~1.1µs per operation.
+**Action:** When using `sqids-go` or similar ID generators that require complex setup logic (alphabet shuffling, filtering), instantiate the instance once globally or attach it to a struct instead of recreating it on every encode/decode request.

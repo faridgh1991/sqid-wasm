@@ -21,6 +21,9 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         sourceMode: 'number', targetMode: 'sqid'
     };
 
+    // ⚡ Bolt: Cache previously computed values to avoid synchronous WASM boundary execution penalty
+    const conversionCache = new Map();
+
     // --- DOM Element Selection ---
     const sourceInput = document.getElementById("sourceInput");
     const outputDiv = document.getElementById("output");
@@ -64,6 +67,13 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
 
     // --- Core Functions ---
     const runConversion = (inputText) => {
+        const cacheKey = `${state.sourceMode}:${inputText}`;
+        if (conversionCache.has(cacheKey)) {
+            const cached = conversionCache.get(cacheKey);
+            applyConversionResult(cached.result, cached.error);
+            return;
+        }
+
         let result;
         let error = null;
 
@@ -80,6 +90,17 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
             }
         }
 
+        // Limit cache size to prevent memory leak
+        if (conversionCache.size > 1000) {
+            const firstKey = conversionCache.keys().next().value;
+            conversionCache.delete(firstKey);
+        }
+        conversionCache.set(cacheKey, { result, error });
+
+        applyConversionResult(result, error);
+    };
+
+    const applyConversionResult = (result, error) => {
         if (error) {
             outputDiv.textContent = error;
             outputDiv.classList.add('error-box');

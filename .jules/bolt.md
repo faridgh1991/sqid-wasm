@@ -7,3 +7,6 @@
 ## 2026-08-26 - [WASM Preloading]
 **Learning:** In Go WebAssembly applications, the .wasm file is typically fetched by `script.js` which delays download until the DOM and JS are parsed. Since WASM binaries are heavy (700KB+), this introduces a major bottleneck in time-to-interactive.
 **Action:** Always add a `<link rel="preload" href="app.wasm" as="fetch" type="application/wasm" crossorigin="anonymous">` in the HTML `<head>` to start downloading the WASM payload simultaneously with JS/CSS parsing, bypassing the waterfall execution delay.
+## 2026-08-30 - [WASM Boundary Caching]
+**Learning:** Repeatedly crossing the JS/WASM boundary for identical inputs (e.g. from key presses) incurs unnecessary execution overhead and synchronous main thread blocking.
+**Action:** Always memoize WASM boundary calls in JS to prevent redundant execution for previously computed values.

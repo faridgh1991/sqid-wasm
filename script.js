@@ -63,21 +63,37 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     }
 
     // --- Core Functions ---
+    const conversionCache = new Map(); // ⚡ Bolt: Cache WASM boundary calls
+
     const runConversion = (inputText) => {
         let result;
         let error = null;
 
-        if (state.sourceMode === 'number') {
-            if (!/^\d+$/.test(inputText)) {
-                error = "Input must be a valid positive number.";
-            } else {
-                result = encodeSqid(inputText);
+        const cacheKey = `${state.sourceMode}:${inputText}`;
+        if (conversionCache.has(cacheKey)) {
+            const cached = conversionCache.get(cacheKey);
+            result = cached.result;
+            error = cached.error;
+        } else {
+            if (state.sourceMode === 'number') {
+                if (!/^\d+$/.test(inputText)) {
+                    error = "Input must be a valid positive number.";
+                } else {
+                    result = encodeSqid(inputText);
+                }
+            } else { // sourceMode is 'sqid'
+                result = decodeSqid(inputText);
+                if (!result) {
+                    error = "Not a valid Sqid. Check for invalid characters or length.";
+                }
             }
-        } else { // sourceMode is 'sqid'
-            result = decodeSqid(inputText);
-            if (!result) {
-                error = "Not a valid Sqid. Check for invalid characters or length.";
+
+            // Keep cache size bounded
+            if (conversionCache.size >= 1000) {
+                const firstKey = conversionCache.keys().next().value;
+                conversionCache.delete(firstKey);
             }
+            conversionCache.set(cacheKey, { result, error });
         }
 
         if (error) {

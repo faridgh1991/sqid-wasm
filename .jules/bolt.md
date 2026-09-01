@@ -10,3 +10,6 @@
 ## 2026-08-30 - [WASM Boundary Caching]
 **Learning:** Repeatedly crossing the JS/WASM boundary for identical inputs (e.g. from key presses) incurs unnecessary execution overhead and synchronous main thread blocking.
 **Action:** Always memoize WASM boundary calls in JS to prevent redundant execution for previously computed values.
+## 2026-09-02 - [JavaScript Event Truthiness Bypass]
+**Learning:** Checking for truthiness on DOM Event handler arguments (e.g. `if (immediate)`) fails when triggered natively by an `Event` object, bypassing logic meant for explicit booleans like `debounce` skipping.
+**Action:** Always use strict equality (e.g. `immediate === true`) when checking optional boolean arguments that might receive DOM `Event` objects as their first parameter.

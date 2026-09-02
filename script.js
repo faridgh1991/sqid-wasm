@@ -127,7 +127,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
 
         outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
 
-        if (immediate) {
+        if (immediate === true) {
             debouncedRunConversion.cancel();
             runConversion(inputText);
         } else {

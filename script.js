@@ -24,6 +24,10 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     // ⚡ Bolt: Cache previously computed values to avoid synchronous WASM boundary execution penalty
     const conversionCache = new Map();
 
+    // ⚡ Bolt: Pre-compile regular expressions to avoid recompilation on every keystroke
+    const numberRegex = /^\d+$/;
+    const sqidRegex = /^[a-zA-Z0-9]+$/;
+
     // --- DOM Element Selection ---
     const sourceInput = document.getElementById("sourceInput");
     const outputDiv = document.getElementById("output");
@@ -78,15 +82,20 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         let error = null;
 
         if (state.sourceMode === 'number') {
-            if (!/^\d+$/.test(inputText)) {
+            if (!numberRegex.test(inputText)) {
                 error = "Input must be a valid positive number.";
             } else {
                 result = encodeSqid(inputText);
             }
         } else { // sourceMode is 'sqid'
-            result = decodeSqid(inputText);
-            if (!result) {
+            // ⚡ Bolt: Validate characters in JS to completely avoid the expensive WASM boundary for obviously bad inputs
+            if (!sqidRegex.test(inputText)) {
                 error = "Not a valid Sqid. Check for invalid characters or length.";
+            } else {
+                result = decodeSqid(inputText);
+                if (!result || result.toString().startsWith("Error")) {
+                    error = "Not a valid Sqid. Check for invalid characters or length.";
+                }
             }
         }
 
@@ -120,12 +129,12 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         // Clear output only when input is empty to avoid flickering
         if (!inputText) {
             outputDiv.innerHTML = '';
-            outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
+            outputDiv.classList.remove('error-box'); // ⚡ Bolt: Avoid changing entire className to prevent layout thrashing
             debouncedRunConversion.cancel();
             return;
         }
 
-        outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
+        // ⚡ Bolt: Removed redundant `outputDiv.className = 'text-area result-box'` here which caused synchronous layout thrashing and UI flickering on every keystroke
 
         if (immediate === true) {
             debouncedRunConversion.cancel();

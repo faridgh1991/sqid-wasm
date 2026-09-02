@@ -13,3 +13,6 @@
 ## 2026-09-02 - [JavaScript Event Truthiness Bypass]
 **Learning:** Checking for truthiness on DOM Event handler arguments (e.g. `if (immediate)`) fails when triggered natively by an `Event` object, bypassing logic meant for explicit booleans like `debounce` skipping.
 **Action:** Always use strict equality (e.g. `immediate === true`) when checking optional boolean arguments that might receive DOM `Event` objects as their first parameter.
+## 2026-09-02 - [WASM Input Validation & Layout Thrashing]
+**Learning:** Checking for truthiness on DOM Event handler arguments (e.g. `if (immediate)`) fails when triggered natively by an `Event` object, bypassing logic meant for explicit booleans like `debounce` skipping. Additionally, crossing the WASM boundary is expensive. Validating input format on the JS side before sending data to WASM avoids unnecessary overhead for obvious failures. Also, synchronously replacing DOM `className` on every input stroke causes layout thrashing and visual flickering.
+**Action:** Always pre-validate strings (e.g., regex `^[a-zA-Z0-9]+$`) in JS before crossing the WebAssembly boundary to handle failure states quickly. Prefer updating specific classes via `classList.add/remove` rather than replacing `className` entirely to prevent DOM reflows. Pre-compile Regex objects outside of Hot path event listeners.

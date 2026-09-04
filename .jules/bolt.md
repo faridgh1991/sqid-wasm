@@ -13,3 +13,6 @@
 ## 2026-09-02 - [JavaScript Event Truthiness Bypass]
 **Learning:** Checking for truthiness on DOM Event handler arguments (e.g. `if (immediate)`) fails when triggered natively by an `Event` object, bypassing logic meant for explicit booleans like `debounce` skipping.
 **Action:** Always use strict equality (e.g. `immediate === true`) when checking optional boolean arguments that might receive DOM `Event` objects as their first parameter.
+## 2026-09-10 - [Redundant Input Processing Pipeline]
+**Learning:** DOM event handlers that process text inputs (e.g., trimming strings) often trigger a full processing pipeline—including debounce timer allocations and cache lookups—even when the user types trailing whitespace that is stripped out anyway.
+**Action:** Track the `lastTrimmedInput` state and early-return if the normalized input has not changed, preventing redundant debounce setups and unnecessary processing cycles.

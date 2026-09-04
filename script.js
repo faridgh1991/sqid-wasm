@@ -20,6 +20,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     let state = {
         sourceMode: 'number', targetMode: 'sqid'
     };
+    let lastTrimmedInput = null; // ⚡ Bolt: Track last input to prevent redundant processing
 
     // ⚡ Bolt: Cache previously computed values to avoid synchronous WASM boundary execution penalty
     const conversionCache = new Map();
@@ -34,6 +35,9 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     const sourceModeTabs = document.getElementById("source-mode-tabs");
     const charCount = document.getElementById("charCount");
     const randomBtn = document.getElementById("randomBtn");
+
+    // ⚡ Bolt: Cache NodeList to prevent O(N) DOM traversal on every tab click/swap
+    const modeTabs = document.querySelectorAll('.mode-tab');
 
     // --- Event Listeners ---
     sourceInput.addEventListener("input", handleConversion);
@@ -113,13 +117,23 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     const debouncedRunConversion = debounce(runConversion, 250); // ⚡ Bolt: Debounce WASM execution to improve typing performance
 
     function handleConversion(immediate = false) {
-        const inputText = sourceInput.value.trim();
+        const rawValue = sourceInput.value;
+        const inputText = rawValue.trim();
+
+        // Update UI counters and classes unconditionally
         outputContainer.classList.toggle('input-has-text', inputText.length > 0);
-        charCount.textContent = `${sourceInput.value.length} / 5000`;
+        charCount.textContent = `${rawValue.length} / 5000`;
+
+        // ⚡ Bolt: Prevent redundant processing pipeline if the trimmed input hasn't changed,
+        // saving CPU cycles, debounce timer allocations, and unnecessary cache lookups.
+        if (inputText === lastTrimmedInput && immediate !== true) {
+            return;
+        }
+        lastTrimmedInput = inputText;
 
         // Clear output only when input is empty to avoid flickering
         if (!inputText) {
-            outputDiv.innerHTML = '';
+            outputDiv.textContent = ''; // ⚡ Bolt: textContent is faster than innerHTML for clearing
             outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
             debouncedRunConversion.cancel();
             return;
@@ -145,7 +159,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     }
 
     function updateUI() {
-        document.querySelectorAll('.mode-tab').forEach(tab => {
+        modeTabs.forEach(tab => {
             const isSourceTab = tab.parentElement.id === 'source-mode-tabs';
             const isActive = isSourceTab ? tab.dataset.mode === state.sourceMode : tab.dataset.mode === state.targetMode;
             tab.classList.toggle('active', isActive);

@@ -23,6 +23,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
 
     // ⚡ Bolt: Cache previously computed values to avoid synchronous WASM boundary execution penalty
     const conversionCache = new Map();
+    let lastProcessedKey = null; // ⚡ Bolt: Track last processed input to avoid redundant pipeline execution on invisible changes
 
     // --- DOM Element Selection ---
     const sourceInput = document.getElementById("sourceInput");
@@ -114,8 +115,18 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
 
     function handleConversion(immediate = false) {
         const inputText = sourceInput.value.trim();
+
+        // Update character count and UI state on every raw input change
         outputContainer.classList.toggle('input-has-text', inputText.length > 0);
         charCount.textContent = `${sourceInput.value.length} / 5000`;
+
+        const currentKey = `${state.sourceMode}:${inputText}`;
+
+        // ⚡ Bolt: Early return if normalized input hasn't changed to avoid redundant timer allocation and WASM boundary calls
+        if (lastProcessedKey === currentKey && immediate !== true) {
+            return;
+        }
+        lastProcessedKey = currentKey;
 
         // Clear output only when input is empty to avoid flickering
         if (!inputText) {

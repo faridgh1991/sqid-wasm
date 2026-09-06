@@ -52,6 +52,9 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         }
     });
 
+    // --- Application State ---
+    let lastProcessedKey = null;
+
     // --- Utility Functions ---
     function debounce(func, wait) {
         let timeout;
@@ -114,8 +117,15 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
 
     function handleConversion(immediate = false) {
         const inputText = sourceInput.value.trim();
+        const currentCompositeKey = `${state.sourceMode}:${inputText}`;
+
         outputContainer.classList.toggle('input-has-text', inputText.length > 0);
         charCount.textContent = `${sourceInput.value.length} / 5000`;
+
+        if (!immediate && currentCompositeKey === lastProcessedKey) {
+            return; // ⚡ Bolt: Early return to prevent redundant processing pipelines for invisible changes like trailing whitespace
+        }
+        lastProcessedKey = currentCompositeKey;
 
         // Clear output only when input is empty to avoid flickering
         if (!inputText) {

@@ -13,3 +13,6 @@
 ## 2026-09-02 - [JavaScript Event Truthiness Bypass]
 **Learning:** Checking for truthiness on DOM Event handler arguments (e.g. `if (immediate)`) fails when triggered natively by an `Event` object, bypassing logic meant for explicit booleans like `debounce` skipping.
 **Action:** Always use strict equality (e.g. `immediate === true`) when checking optional boolean arguments that might receive DOM `Event` objects as their first parameter.
+## 2026-09-08 - [Early Return on Invisible Input Changes]
+**Learning:** Typing trailing whitespace or other invisible characters still fires 'input' events, triggering redundant processing pipelines and debounced WASM boundary calls even if the normalized text hasn't changed.
+**Action:** Always track normalized inputs (e.g., composite key of mode and trimmed text) and implement an early return in the event handler to short-circuit execution. Ensure UI states dependent on the raw input length are updated *before* this early return.

@@ -20,6 +20,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     let state = {
         sourceMode: 'number', targetMode: 'sqid'
     };
+    let lastTrimmedInputKey = null;
 
     // ⚡ Bolt: Cache previously computed values to avoid synchronous WASM boundary execution penalty
     const conversionCache = new Map();
@@ -116,6 +117,13 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         const inputText = sourceInput.value.trim();
         outputContainer.classList.toggle('input-has-text', inputText.length > 0);
         charCount.textContent = `${sourceInput.value.length} / 5000`;
+
+        const currentKey = state.sourceMode + ':' + inputText;
+        // ⚡ Bolt: Early return to prevent redundant processing pipelines for invisible changes like trailing whitespace
+        if (immediate !== true && currentKey === lastTrimmedInputKey) {
+            return;
+        }
+        lastTrimmedInputKey = currentKey;
 
         // Clear output only when input is empty to avoid flickering
         if (!inputText) {

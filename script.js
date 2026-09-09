@@ -24,6 +24,10 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     // ⚡ Bolt: Cache previously computed values to avoid synchronous WASM boundary execution penalty
     const conversionCache = new Map();
 
+    // ⚡ Bolt: Track normalized inputs to prevent redundant processing pipelines
+    let lastTrimmedInput = null;
+    let lastProcessedMode = null;
+
     // --- DOM Element Selection ---
     const sourceInput = document.getElementById("sourceInput");
     const outputDiv = document.getElementById("output");
@@ -114,8 +118,18 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
 
     function handleConversion(immediate = false) {
         const inputText = sourceInput.value.trim();
+
+        // ⚡ Bolt: Always update UI states dependent on raw input first
         outputContainer.classList.toggle('input-has-text', inputText.length > 0);
         charCount.textContent = `${sourceInput.value.length} / 5000`;
+
+        // ⚡ Bolt: Early return to prevent redundant processing on invisible changes (like trailing spaces)
+        if (inputText === lastTrimmedInput && state.sourceMode === lastProcessedMode) {
+            return;
+        }
+
+        lastTrimmedInput = inputText;
+        lastProcessedMode = state.sourceMode;
 
         // Clear output only when input is empty to avoid flickering
         if (!inputText) {

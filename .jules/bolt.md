@@ -13,3 +13,6 @@
 ## 2026-09-02 - [JavaScript Event Truthiness Bypass]
 **Learning:** Checking for truthiness on DOM Event handler arguments (e.g. `if (immediate)`) fails when triggered natively by an `Event` object, bypassing logic meant for explicit booleans like `debounce` skipping.
 **Action:** Always use strict equality (e.g. `immediate === true`) when checking optional boolean arguments that might receive DOM `Event` objects as their first parameter.
+## 2026-09-09 - [DOM Event Early Returns on Invisible Changes]
+**Learning:** DOM event handlers processing text input can trigger complex, redundant processing pipelines (like debouncing or cache lookups) even when the normalized text (e.g., trimmed) has not functionally changed, such as when adding trailing spaces.
+**Action:** Track normalized inputs and apply early returns in event handlers to prevent these redundant processing pipelines, ensuring UI states that depend on the raw input (like character counts) are updated before the early return to prevent visual regressions.

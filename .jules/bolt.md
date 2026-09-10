@@ -13,3 +13,6 @@
 ## 2026-09-02 - [JavaScript Event Truthiness Bypass]
 **Learning:** Checking for truthiness on DOM Event handler arguments (e.g. `if (immediate)`) fails when triggered natively by an `Event` object, bypassing logic meant for explicit booleans like `debounce` skipping.
 **Action:** Always use strict equality (e.g. `immediate === true`) when checking optional boolean arguments that might receive DOM `Event` objects as their first parameter.
+## 2026-09-04 - [WASM Input Handling Performance]
+**Learning:** Invisible input changes (like trailing whitespace) that result in the same trimmed string still trigger the debounced WASM conversion pipeline, causing unnecessary execution.
+**Action:** Always track the last processed trimmed input and mode in text input event handlers. Use early returns to bypass the conversion pipeline if the trimmed input matches the previously processed one, but ensure UI states dependent on raw input (like character counts) are updated *before* this early return to prevent visual regressions.

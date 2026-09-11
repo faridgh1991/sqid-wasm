@@ -13,3 +13,6 @@
 ## 2026-09-02 - [JavaScript Event Truthiness Bypass]
 **Learning:** Checking for truthiness on DOM Event handler arguments (e.g. `if (immediate)`) fails when triggered natively by an `Event` object, bypassing logic meant for explicit booleans like `debounce` skipping.
 **Action:** Always use strict equality (e.g. `immediate === true`) when checking optional boolean arguments that might receive DOM `Event` objects as their first parameter.
+## 2026-09-11 - [Input Handler Optimization]
+**Learning:** In applications crossing a WASM boundary, repeated calls with identical logical inputs (e.g., trailing whitespace trimmed off) still incur processing overhead, especially if the WASM executes complex tasks or relies heavily on JS callbacks.
+**Action:** Always maintain the last successfully processed input value and apply early returns in DOM event handlers before invoking expensive backend or WASM boundary logic to prevent duplicate effort.

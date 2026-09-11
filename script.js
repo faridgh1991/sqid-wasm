@@ -21,6 +21,10 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         sourceMode: 'number', targetMode: 'sqid'
     };
 
+    // ⚡ Bolt: Track last processed input to skip redundant execution for whitespace changes
+    let lastProcessedInput = null;
+    let lastProcessedMode = null;
+
     // ⚡ Bolt: Cache previously computed values to avoid synchronous WASM boundary execution penalty
     const conversionCache = new Map();
 
@@ -122,8 +126,17 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
             outputDiv.innerHTML = '';
             outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
             debouncedRunConversion.cancel();
+            lastProcessedInput = inputText;
+            lastProcessedMode = state.sourceMode;
             return;
         }
+
+        // ⚡ Bolt: Early return for inputs that result in the same trimmed string
+        if (inputText === lastProcessedInput && state.sourceMode === lastProcessedMode) {
+            return;
+        }
+        lastProcessedInput = inputText;
+        lastProcessedMode = state.sourceMode;
 
         outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
 

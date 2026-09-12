@@ -23,6 +23,8 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
 
     // ⚡ Bolt: Cache previously computed values to avoid synchronous WASM boundary execution penalty
     const conversionCache = new Map();
+    // ⚡ Bolt: Track normalized inputs to prevent redundant processing pipelines
+    let lastProcessedInputKey = null;
 
     // --- DOM Element Selection ---
     const sourceInput = document.getElementById("sourceInput");
@@ -122,8 +124,16 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
             outputDiv.innerHTML = '';
             outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
             debouncedRunConversion.cancel();
+            lastProcessedInputKey = null;
             return;
         }
+
+        const currentInputKey = `${state.sourceMode}:${inputText}`;
+        // ⚡ Bolt: Early return for invisible changes (like trailing whitespace) to avoid redundant pipeline
+        if (currentInputKey === lastProcessedInputKey && immediate !== true) {
+            return;
+        }
+        lastProcessedInputKey = currentInputKey;
 
         outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
 

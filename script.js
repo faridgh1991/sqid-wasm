@@ -112,6 +112,9 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
 
     const debouncedRunConversion = debounce(runConversion, 250); // ⚡ Bolt: Debounce WASM execution to improve typing performance
 
+    // ⚡ Bolt: Track the last processed normalized input to prevent redundant pipelines on invisible changes (like trailing spaces)
+    let lastProcessedInputKey = null;
+
     function handleConversion(immediate = false) {
         const inputText = sourceInput.value.trim();
         outputContainer.classList.toggle('input-has-text', inputText.length > 0);
@@ -122,10 +125,18 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
             outputDiv.innerHTML = '';
             outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
             debouncedRunConversion.cancel();
+            lastProcessedInputKey = null;
+            return;
+        }
+
+        const currentInputKey = `${state.sourceMode}:${inputText}`;
+        if (currentInputKey === lastProcessedInputKey) {
+            // ⚡ Bolt: Early return to prevent redundant WASM processing pipelines when only invisible changes occurred
             return;
         }
 
         outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
+        lastProcessedInputKey = currentInputKey;
 
         if (immediate === true) {
             debouncedRunConversion.cancel();

@@ -13,3 +13,6 @@
 ## 2026-09-02 - [JavaScript Event Truthiness Bypass]
 **Learning:** Checking for truthiness on DOM Event handler arguments (e.g. `if (immediate)`) fails when triggered natively by an `Event` object, bypassing logic meant for explicit booleans like `debounce` skipping.
 **Action:** Always use strict equality (e.g. `immediate === true`) when checking optional boolean arguments that might receive DOM `Event` objects as their first parameter.
+## 2026-09-08 - [Redundant Execution on Invisible Input Changes]
+**Learning:** Typing invisible characters (like trailing spaces) triggers the DOM 'input' event but does not change the trimmed text payload. This causes redundant debounce queueing, cache lookups, and DOM repaints without altering the application state.
+**Action:** Always track the last processed (trimmed) input state in text-handling event loops. Apply early returns to skip processing pipelines when invisible characters are added. Ensure UI state changes reliant on raw input (like character counters) execute before this early return to prevent visual desync.

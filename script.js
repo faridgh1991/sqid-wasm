@@ -23,6 +23,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
 
     // ⚡ Bolt: Cache previously computed values to avoid synchronous WASM boundary execution penalty
     const conversionCache = new Map();
+    let lastProcessedInputKey = null;
 
     // --- DOM Element Selection ---
     const sourceInput = document.getElementById("sourceInput");
@@ -122,10 +123,19 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
             outputDiv.innerHTML = '';
             outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
             debouncedRunConversion.cancel();
+            lastProcessedInputKey = null;
+            return;
+        }
+
+        // ⚡ Bolt: Early return for invisible input changes (e.g. trailing spaces)
+        const currentInputKey = `${state.sourceMode}:${inputText}`;
+        if (currentInputKey === lastProcessedInputKey && immediate !== true) {
             return;
         }
 
         outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
+
+        lastProcessedInputKey = currentInputKey;
 
         if (immediate === true) {
             debouncedRunConversion.cancel();

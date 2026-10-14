@@ -16,8 +16,31 @@ func TestDecodeString(t *testing.T) {
 	if err != nil {
 		t.Fatalf("decodeString(%q) failed: %v", id, err)
 	}
-	if got != 456 {
-		t.Errorf("decodeString(%q) = %d, want 456", id, got)
+	if len(got) != 1 || got[0] != 456 {
+		t.Errorf("decodeString(%q) = %v, want [456]", id, got)
+	}
+}
+
+func TestEncodeAndDecodeMultiple(t *testing.T) {
+	inputs := []uint64{1, 2, 3, 456}
+	id, err := sqids.EncodeUint64s(inputs)
+	if err != nil {
+		t.Fatalf("Failed to encode slice: %v", err)
+	}
+
+	got, err := sqids.DecodeString(id)
+	if err != nil {
+		t.Fatalf("DecodeString(%q) failed: %v", id, err)
+	}
+
+	if len(got) != len(inputs) {
+		t.Fatalf("DecodeString length mismatch: got %d, want %d", len(got), len(inputs))
+	}
+
+	for i := range inputs {
+		if got[i] != inputs[i] {
+			t.Errorf("got[%d] = %d, want %d", i, got[i], inputs[i])
+		}
 	}
 }
 

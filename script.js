@@ -80,14 +80,17 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         let error = null;
 
         if (state.sourceMode === 'number') {
-            if (!/^\d+$/.test(inputText)) {
-                error = "Input must be a valid positive number.";
+            if (!/^\d+(\s*,\s*\d+)*$/.test(inputText)) {
+                error = "Input must be valid non-negative numbers separated by commas.";
             } else {
                 result = encodeSqid(inputText);
+                if (typeof result === 'string' && result.startsWith("Error:")) {
+                    error = result;
+                }
             }
         } else { // sourceMode is 'sqid'
             result = decodeSqid(inputText);
-            if (!result) {
+            if (!result || (typeof result === 'string' && result.startsWith("Error:"))) {
                 error = "Not a valid Sqid. Check for invalid characters or length.";
             }
         }
@@ -160,7 +163,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
             tab.classList.toggle('active', isActive);
         });
 
-        sourceInput.placeholder = state.sourceMode === 'number' ? "Enter a number to encode..." : "Enter a Sqid to decode...";
+        sourceInput.placeholder = state.sourceMode === 'number' ? "Enter non-negative numbers to encode (e.g., 1, 2, 3)..." : "Enter a Sqid to decode...";
     }
 
     function copyToClipboard(text, button) {

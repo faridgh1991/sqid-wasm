@@ -36,6 +36,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     const sourceModeTabs = document.getElementById("source-mode-tabs");
     const charCount = document.getElementById("charCount");
     const randomBtn = document.getElementById("randomBtn");
+    const modeTabs = document.querySelectorAll('.mode-tab'); // ⚡ Bolt: Cache DOM elements
 
     // --- Event Listeners ---
     sourceInput.addEventListener("input", handleConversion);
@@ -136,7 +137,8 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
 
         outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
 
-        if (immediate === true) {
+        // ⚡ Bolt: Bypass debounce delay if input is cached to provide instant UI feedback
+        if (immediate === true || conversionCache.has(currentKey)) {
             debouncedRunConversion.cancel();
             runConversion(inputText);
         } else {
@@ -154,7 +156,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     }
 
     function updateUI() {
-        document.querySelectorAll('.mode-tab').forEach(tab => {
+        modeTabs.forEach(tab => {
             const isSourceTab = tab.parentElement.id === 'source-mode-tabs';
             const isActive = isSourceTab ? tab.dataset.mode === state.sourceMode : tab.dataset.mode === state.targetMode;
             tab.classList.toggle('active', isActive);

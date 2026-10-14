@@ -16,3 +16,6 @@
 ## 2026-09-14 - [Redundant WASM Processing on Unchanged Inputs]
 **Learning:** Event listeners attached to text inputs often trigger on non-visible state changes or spaces when inputs are normalized (e.g., using `.trim()`). Since this app calls into a WebAssembly boundary for conversion, re-processing structurally identical inputs introduces unnecessary execution latency.
 **Action:** Track a composite state string (e.g., mode + trimmed input) to implement an early return bypass in the event handler, making sure UI side-effects tied to raw input (like character counters) still update beforehand.
+## 2026-09-15 - [Debounce Cache Bypass]
+**Learning:** Applying a debounce unconditionally introduces unnecessary artificial latency for previously cached input states (e.g., when the user hits backspace to a previous input).
+**Action:** Always check the cache before debouncing and instantly execute the logic if the value is memoized, bypassing the debounce delay for immediate UI feedback.

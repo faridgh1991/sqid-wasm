@@ -16,3 +16,6 @@
 ## 2026-09-14 - [Redundant WASM Processing on Unchanged Inputs]
 **Learning:** Event listeners attached to text inputs often trigger on non-visible state changes or spaces when inputs are normalized (e.g., using `.trim()`). Since this app calls into a WebAssembly boundary for conversion, re-processing structurally identical inputs introduces unnecessary execution latency.
 **Action:** Track a composite state string (e.g., mode + trimmed input) to implement an early return bypass in the event handler, making sure UI side-effects tied to raw input (like character counters) still update beforehand.
+## 2026-10-17 - [Bidirectional WASM Caching & True LRU Eviction]
+**Learning:** In two-way encoder/decoder apps backed by WASM, swapping modes on an already converted value triggers an unnecessary recalculation. Furthermore, simply evicting the 'first key' from a JavaScript Map works for insertion-order, but does not implement an LRU cache unless the keys are deleted and re-inserted on access.
+**Action:** Pre-populate inverse cache entries when calculating a result to avoid WASM boundary penalties during mode swaps. Implement true LRU in JS Maps by deleting and re-inserting keys upon cache hit.

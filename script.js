@@ -72,6 +72,11 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         const cacheKey = `${state.sourceMode}:${inputText}`;
         if (conversionCache.has(cacheKey)) {
             const cached = conversionCache.get(cacheKey);
+
+            // ⚡ Bolt: Move accessed key to end of Map to implement true LRU eviction
+            conversionCache.delete(cacheKey);
+            conversionCache.set(cacheKey, cached);
+
             applyConversionResult(cached.result, cached.error);
             return;
         }
@@ -98,6 +103,19 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
             conversionCache.delete(firstKey);
         }
         conversionCache.set(cacheKey, { result, error });
+
+        // ⚡ Bolt: Pre-populate inverse cache to eliminate WASM penalty on mode swap
+        if (!error && result && !result.toString().startsWith("Error:")) {
+            const inverseMode = state.sourceMode === 'number' ? 'sqid' : 'number';
+            const inverseKey = `${inverseMode}:${result}`;
+            if (!conversionCache.has(inverseKey)) {
+                if (conversionCache.size > 1000) {
+                    const firstKey = conversionCache.keys().next().value;
+                    conversionCache.delete(firstKey);
+                }
+                conversionCache.set(inverseKey, { result: inputText, error: null });
+            }
+        }
 
         applyConversionResult(result, error);
     };

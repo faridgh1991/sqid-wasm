@@ -34,6 +34,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     const swapBtn = document.getElementById("swapBtn");
     const copyBtn = document.getElementById("copyBtn");
     const sourceModeTabs = document.getElementById("source-mode-tabs");
+    const modeTabs = document.querySelectorAll('.mode-tab'); // ⚡ Bolt: Cache DOM node list
     const charCount = document.getElementById("charCount");
     const randomBtn = document.getElementById("randomBtn");
 
@@ -72,6 +73,9 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         const cacheKey = `${state.sourceMode}:${inputText}`;
         if (conversionCache.has(cacheKey)) {
             const cached = conversionCache.get(cacheKey);
+            // ⚡ Bolt: Update LRU cache order by deleting and re-inserting
+            conversionCache.delete(cacheKey);
+            conversionCache.set(cacheKey, cached);
             applyConversionResult(cached.result, cached.error);
             return;
         }
@@ -115,9 +119,10 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     const debouncedRunConversion = debounce(runConversion, 250); // ⚡ Bolt: Debounce WASM execution to improve typing performance
 
     function handleConversion(immediate = false) {
-        const inputText = sourceInput.value.trim();
+        const rawValue = sourceInput.value;
+        const inputText = rawValue.trim();
         outputContainer.classList.toggle('input-has-text', inputText.length > 0);
-        charCount.textContent = `${sourceInput.value.length} / 5000`;
+        charCount.textContent = `${rawValue.length} / 5000`; // ⚡ Bolt: Avoid redundant DOM property read
 
         // ⚡ Bolt: Early return if normalized input and mode haven't changed to prevent redundant processing
         const currentKey = `${state.sourceMode}:${inputText}`;
@@ -129,12 +134,12 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         // Clear output only when input is empty to avoid flickering
         if (!inputText) {
             outputDiv.innerHTML = '';
-            outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
+            // ⚡ Bolt: Avoid synchronous layout thrashing; styling handled by classList in applyConversionResult
+            outputDiv.classList.remove('error-box');
             debouncedRunConversion.cancel();
             return;
         }
 
-        outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
 
         if (immediate === true) {
             debouncedRunConversion.cancel();
@@ -154,7 +159,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     }
 
     function updateUI() {
-        document.querySelectorAll('.mode-tab').forEach(tab => {
+        modeTabs.forEach(tab => {
             const isSourceTab = tab.parentElement.id === 'source-mode-tabs';
             const isActive = isSourceTab ? tab.dataset.mode === state.sourceMode : tab.dataset.mode === state.targetMode;
             tab.classList.toggle('active', isActive);

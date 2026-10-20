@@ -36,6 +36,8 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     const sourceModeTabs = document.getElementById("source-mode-tabs");
     const charCount = document.getElementById("charCount");
     const randomBtn = document.getElementById("randomBtn");
+    // ⚡ Bolt: Cache mode tabs to avoid repeated document.querySelectorAll calls
+    const modeTabsList = document.querySelectorAll('.mode-tab');
 
     // --- Event Listeners ---
     sourceInput.addEventListener("input", handleConversion);
@@ -72,6 +74,9 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         const cacheKey = `${state.sourceMode}:${inputText}`;
         if (conversionCache.has(cacheKey)) {
             const cached = conversionCache.get(cacheKey);
+            // ⚡ Bolt: Delete and re-set to correctly update Map insertion order for LRU eviction
+            conversionCache.delete(cacheKey);
+            conversionCache.set(cacheKey, cached);
             applyConversionResult(cached.result, cached.error);
             return;
         }
@@ -129,12 +134,14 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         // Clear output only when input is empty to avoid flickering
         if (!inputText) {
             outputDiv.innerHTML = '';
-            outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
+            // ⚡ Bolt: Avoid synchronous className rewrite to prevent layout thrashing
+            outputDiv.classList.remove('error-box');
             debouncedRunConversion.cancel();
             return;
         }
 
-        outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
+        // ⚡ Bolt: Avoid synchronous className rewrite to prevent layout thrashing
+        outputDiv.classList.remove('error-box');
 
         if (immediate === true) {
             debouncedRunConversion.cancel();
@@ -154,7 +161,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     }
 
     function updateUI() {
-        document.querySelectorAll('.mode-tab').forEach(tab => {
+        modeTabsList.forEach(tab => {
             const isSourceTab = tab.parentElement.id === 'source-mode-tabs';
             const isActive = isSourceTab ? tab.dataset.mode === state.sourceMode : tab.dataset.mode === state.targetMode;
             tab.classList.toggle('active', isActive);

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"sqid-wasm/generator"
 	"strconv"
+	"strings"
 	"syscall/js"
 
 	"sqid-wasm/sqids"
@@ -16,13 +17,27 @@ func encodeSqid(_ js.Value, args []js.Value) interface{} {
 		return js.ValueOf("Error: Missing input")
 	}
 
-	input := args[0].String()
-	parsedUint, err := strconv.ParseUint(input, 10, 64)
-	if err != nil {
-		return js.ValueOf("Error: " + err.Error())
+	input := strings.TrimSpace(args[0].String())
+	if input == "" {
+		return js.ValueOf("Error: Empty input")
 	}
 
-	id, err := sqids.EncodeUint64(parsedUint)
+	parts := strings.Split(input, ",")
+	numbers := make([]uint64, 0, len(parts))
+
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		if part == "" {
+			return js.ValueOf("Error: Empty number in list")
+		}
+		parsedUint, err := strconv.ParseUint(part, 10, 64)
+		if err != nil {
+			return js.ValueOf("Error: " + err.Error())
+		}
+		numbers = append(numbers, parsedUint)
+	}
+
+	id, err := sqids.EncodeUint64s(numbers)
 	if err != nil {
 		return js.ValueOf("Error: " + err.Error())
 	}
@@ -35,12 +50,17 @@ func decodeSqid(_ js.Value, args []js.Value) interface{} {
 		return js.ValueOf("Error: Missing input")
 	}
 
-	number, err := sqids.DecodeString(args[0].String())
+	numbers, err := sqids.DecodeString(args[0].String())
 	if err != nil {
 		return js.ValueOf("Error: " + err.Error())
 	}
 
-	return js.ValueOf(strconv.FormatUint(number, 10))
+	strNums := make([]string, len(numbers))
+	for i, num := range numbers {
+		strNums[i] = strconv.FormatUint(num, 10)
+	}
+
+	return js.ValueOf(strings.Join(strNums, ", "))
 }
 
 func generateRandomID(_ js.Value, _ []js.Value) interface{} {

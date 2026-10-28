@@ -72,6 +72,9 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         const cacheKey = `${state.sourceMode}:${inputText}`;
         if (conversionCache.has(cacheKey)) {
             const cached = conversionCache.get(cacheKey);
+            // ⚡ Bolt: Refresh insertion order in the Map on cache hit for proper LRU eviction
+            conversionCache.delete(cacheKey);
+            conversionCache.set(cacheKey, cached);
             applyConversionResult(cached.result, cached.error);
             return;
         }

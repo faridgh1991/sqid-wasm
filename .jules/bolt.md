@@ -16,3 +16,6 @@
 ## 2026-09-14 - [Redundant WASM Processing on Unchanged Inputs]
 **Learning:** Event listeners attached to text inputs often trigger on non-visible state changes or spaces when inputs are normalized (e.g., using `.trim()`). Since this app calls into a WebAssembly boundary for conversion, re-processing structurally identical inputs introduces unnecessary execution latency.
 **Action:** Track a composite state string (e.g., mode + trimmed input) to implement an early return bypass in the event handler, making sure UI side-effects tied to raw input (like character counters) still update beforehand.
+## 2026-10-05 - [Map Caching Insertion Order in JS]
+**Learning:** Using a JavaScript `Map` for an LRU cache can fail to evict correctly if the underlying insertion order isn't updated upon access. Simply calling `Map.get()` leaves the item in its original spot, which could lead to premature eviction if it was added early but accessed recently.
+**Action:** Always `delete()` and `set()` the key on access when implementing an LRU cache with JavaScript Maps to correctly update its position to the end of the insertion order.

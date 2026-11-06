@@ -50,6 +50,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
 
     // ⚡ Bolt: Cache previously computed values to avoid synchronous WASM boundary execution penalty
     const conversionCache = new Map();
+    const CACHE_LIMIT = 1000;
     // ⚡ Bolt: Track normalized inputs to prevent redundant processing pipelines
     let lastProcessedKey = '';
 
@@ -101,6 +102,9 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
         const cacheKey = `${state.sourceMode}:${inputText}`;
         if (conversionCache.has(cacheKey)) {
             const cached = conversionCache.get(cacheKey);
+            // LRU: re-insert so this entry moves to the end (most recent) of the Map's insertion order
+            conversionCache.delete(cacheKey);
+            conversionCache.set(cacheKey, cached);
             applyConversionResult(cached.result, cached.error);
             return;
         }
@@ -113,10 +117,9 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
             error = msg.charAt(0).toUpperCase() + msg.slice(1);
         }
 
-        // Limit cache size to prevent memory leak
-        if (conversionCache.size > 1000) {
-            const firstKey = conversionCache.keys().next().value;
-            conversionCache.delete(firstKey);
+        // Limit cache size to prevent memory leak: evict the least recently used entry (first in the Map)
+        if (conversionCache.size >= CACHE_LIMIT) {
+            conversionCache.delete(conversionCache.keys().next().value);
         }
         conversionCache.set(cacheKey, { result, error });
 

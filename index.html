@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="theme-color" content="#f8f9fa" media="(prefers-color-scheme: light)"/>
+    <meta name="theme-color" content="#0f1419" media="(prefers-color-scheme: dark)"/>
+    <meta name="color-scheme" content="light dark"/>
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-T6VNL7NBQW"></script>
     <script>
@@ -14,18 +20,14 @@
         gtag('config', 'G-T6VNL7NBQW');
     </script>
 
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
     <!-- ⚡ Bolt: Preload WASM binary to drastically reduce time-to-interactive -->
     <link rel="preload" href="sqids.wasm" as="fetch" type="application/wasm" crossorigin="anonymous">
 
     <!-- Primary Meta Tags -->
-    <title>SQID-WASM: Free Online Sqids Decoder Tool</title>
+    <title>Sqids Encoder &amp; Decoder Online – Free, In-Browser | SQID-WASM</title>
     <meta name="title" content="SQID-WASM: Free Online Sqids Encoder & Decoder | WebAssembly Tool">
     <meta name="description"
-          content="Free online Sqids Encoder and decoder. Encode and decode short, URL-safe IDs instantly in your browser with this WebAssembly-powered tool."/>
+          content="Free online Sqids encoder and decoder. Convert numbers to short, URL-safe IDs and back instantly. Runs 100% in your browser with WebAssembly, no data sent to a server."/>
     <meta name="author" content="Farid Ghoorchian"/>
     <meta name="application-name" content="SQID-WASM"/>
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
@@ -41,7 +43,7 @@
     <meta property="og:locale" content="en_US"/>
     <meta property="og:title" content="SQID-WASM: Free Online Sqids Encoder & Decoder Tool"/>
     <meta property="og:description"
-          content="Free online Sqids Encoder and decoder. Encode and decode short, URL-safe IDs instantly in your browser with this WebAssembly-powered tool."/>
+          content="Free online Sqids encoder and decoder. Convert numbers to short, URL-safe IDs and back instantly. Runs 100% in your browser with WebAssembly, no data sent to a server."/>
     <meta property="og:image" content="https://farid-ghr.pro/logo.jpg"/>
     <meta property="og:image:secure_url" content="https://farid-ghr.pro/logo.jpg"/>
     <meta property="og:image:type" content="image/jpeg"/>
@@ -55,7 +57,7 @@
     <meta name="twitter:creator" content="@faridgh1991"/>
     <meta name="twitter:title" content="SQID-WASM: Free Online Sqids Encoder & Decoder Tool"/>
     <meta name="twitter:description"
-          content="Free online Sqids Encoder and decoder. Encode and decode short, URL-safe IDs instantly in your browser with this WebAssembly-powered tool."/>
+          content="Free online Sqids encoder and decoder. Convert numbers to short, URL-safe IDs and back instantly. Runs 100% in your browser with WebAssembly, no data sent to a server."/>
     <meta name="twitter:image" content="https://farid-ghr.pro/logo.jpg"/>
     <meta name="twitter:image:alt" content="SQID-WASM Tool Interface"/>
 
@@ -74,7 +76,7 @@
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <!-- Stylesheet -->
     <link rel="stylesheet" href="style.css"/>
@@ -96,7 +98,7 @@
             "@type": "SoftwareApplication",
             "name": "SQID-WASM",
             "alternateName": "Sqids Encoder and Decoder",
-            "description": "Free online WebAssembly tool for generating and decoding short, unique, URL-safe IDs from non-negative numbers using Sqids. Built with Go and compiled to WASM for efficient performance.",
+            "description": "Free online WebAssembly tool for encoding one or more non-negative numbers into short, unique, URL-safe IDs with Sqids, and decoding them back. Built with Go and compiled to WASM; runs entirely in the browser.",
             "url": "https://farid-ghr.pro/sqid-wasm/",
             "image": "https://farid-ghr.pro/logo.jpg",
             "screenshot": "https://farid-ghr.pro/logo.jpg",
@@ -175,7 +177,7 @@
                     "@type": "HowToStep",
                     "position": 2,
                     "name": "Enter Data",
-                    "text": "Type non-negative numbers or a Sqid string into the input field"
+                    "text": "Type one or more non-negative numbers separated by commas, or paste one or more Sqids separated by commas"
                 },
                 {
                     "@type": "HowToStep",
@@ -203,7 +205,7 @@
                     "name": "What numbers can I encode?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "You can encode non-negative integers, including single values or multiple numbers in one Sqid."
+                        "text": "Any non-negative integer from 0 up to 18446744073709551615 (the 64-bit unsigned maximum). Enter several separated by commas (e.g. 1, 2, 3) to get one Sqid per number (e.g. Uk, gb, Ef)."
                     }
                 },
                 {
@@ -236,16 +238,14 @@
 </head>
 <body>
 
-<a href="#main-content" class="sr-only focus:not-sr-only"
-   style="position:absolute;left:-9999px;top:0;z-index:9999;background:#000;color:#fff;padding:8px;">Skip to main
-    content</a>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
 <div class="app-container">
     <header class="app-header">
         <div class="logo">
             <img src="assets/sqid-wasm.png" alt="SQID-WASM Logo - Sqids Tool" width="32" height="32"
                  loading="eager"/>
-            <p style="font-size:1em;margin:0;font-weight:500;">SQID-WASM</p>
+            <span class="logo-text">SQID-WASM</span>
         </div>
         <a href="https://github.com/faridgh1991/sqid-wasm" target="_blank" rel="noopener noreferrer" class="github-link"
            aria-label="View SQID-WASM source code on GitHub" title="GitHub Repository">
@@ -257,23 +257,20 @@
     </header>
 
     <main id="main-content">
-        <article class="seo-content" style="max-width:900px;margin:2rem auto 1.5rem;padding:0 1rem;">
+        <article class="seo-content">
             <header>
-                <h1 style="font-size:2rem;line-height:1.2;margin:0 0 1rem;">Free Online Sqids Encoder and Decoder</h1>
-                <p style="line-height:1.6;margin:0 0 1rem;">
+                <h1>Free Online Sqids Encoder and Decoder</h1>
+                <p>
                     SQID-WASM is a browser-based Sqids encoder and decoder for developers who need short, unique,
-                    URL-safe IDs derived from one or more non-negative numbers.
-                </p>
-                <p style="line-height:1.6;margin:0;">
-                    The conversion runs locally in your browser with Go-powered WebAssembly, so you can test Sqids
-                    quickly without sending input data to a server.
+                    URL-safe IDs from one or more non-negative numbers. Everything runs locally in your browser with
+                    Go-powered WebAssembly, so no input is sent to a server.
                 </p>
             </header>
         </article>
 
         <noscript>
-            <section class="seo-content" style="max-width:900px;margin:0 auto 1.5rem;padding:0 1rem;">
-                <p>This tool requires JavaScript and WebAssembly to run. You can still use the content on this page to learn what SQID-WASM does and when to use Sqids.</p>
+            <section class="seo-content">
+                <p class="notice">This tool requires JavaScript and WebAssembly to run. You can still use the content on this page to learn what SQID-WASM does and when to use Sqids.</p>
             </section>
         </noscript>
 
@@ -304,12 +301,13 @@
                 <section class="panel panel-input" id="panel-input" aria-labelledby="input-label">
                     <label for="sourceInput" id="input-label" class="visually-hidden">Input numbers or Sqid to convert</label>
                     <textarea id="sourceInput" class="text-area" maxlength="5000"
-                              placeholder="Enter non-negative numbers to encode (e.g., 1, 2, 3)..."
+                              placeholder="Enter numbers to encode, e.g. 1, 2, 3"
+                              autocomplete="off" spellcheck="false"
                               aria-describedby="input-help"></textarea>
                     <div class="panel-toolbar">
-                        <div style="display:flex; gap:8px; align-items:center;">
-                            <button class="icon-btn" id="randomBtn" type="button" title="Generate random number">
-                                🎲 Random
+                        <div class="toolbar-group">
+                            <button class="chip-btn" id="randomBtn" type="button" title="Generate a random 64-bit number">
+                                <span aria-hidden="true">🎲</span> Random
                             </button>
                             <span class="char-count" id="charCount" aria-live="polite">0 / 5000</span>
                         </div>
@@ -321,12 +319,12 @@
                     <h2 id="output-label" class="visually-hidden">Conversion Result</h2>
                     <div id="output-container">
                         <div id="empty-state" class="empty-state">
-                            <p>Output will appear here</p>
+                            <p>Your result will appear here</p>
                         </div>
                         <div id="output" class="text-area result-box" aria-live="polite" aria-atomic="true"></div>
                     </div>
                     <div class="panel-toolbar">
-                        <div class="info-container">
+                        <div class="info-container" tabindex="0" role="note" aria-label="About Sqids: short, unique, URL-safe IDs from numbers with profanity filtering.">
                             <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                  stroke-linejoin="round" aria-hidden="true">
@@ -334,7 +332,7 @@
                                 <line x1="12" y1="16" x2="12" y2="12"/>
                                 <line x1="12" y1="8" x2="12.01" y2="8"/>
                             </svg>
-                            <div class="info-tooltip">Based on Sqids: short, unique, URL-safe IDs from numbers with profanity filtering.</div>
+                            <div class="info-tooltip" aria-hidden="true">Based on Sqids: short, unique, URL-safe IDs from numbers with profanity filtering.</div>
                         </div>
                         <button class="icon-btn copy-btn" id="copyBtn" aria-label="Copy result to clipboard"
                                 title="Copy to clipboard">
@@ -344,34 +342,35 @@
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
-                            <span class="copy-tooltip">Copied!</span>
+                            <span class="copy-tooltip" aria-hidden="true">Copied!</span>
                         </button>
+                        <span id="copyStatus" class="visually-hidden" role="status"></span>
                     </div>
                 </section>
             </div>
         </section>
 
-        <article class="seo-content" style="max-width:900px;margin:2rem auto;padding:0 1rem;">
+        <article class="seo-content">
             <section aria-labelledby="what-is-sqid-wasm">
-                <h2 id="what-is-sqid-wasm" style="font-size:1.5rem;margin-bottom:1rem;">What Is SQID-WASM?</h2>
-                <p style="line-height:1.6;margin-bottom:1rem;">
+                <h2 id="what-is-sqid-wasm">What Is SQID-WASM?</h2>
+                <p>
                     SQID-WASM is an online tool built on <a href="https://sqids.org/" target="_blank"
                                                             rel="noopener noreferrer"
                                                             title="Learn more about Sqids">Sqids</a>, an open-source
                     library for turning numbers into short, human-friendly identifiers. It is useful when you want IDs
                     that are cleaner than raw database integers and shorter than many alternative formats.
                 </p>
-                <p style="line-height:1.6;margin-bottom:0;">
+                <p>
                     Because the encoder and decoder run in the browser, the page works well for quick testing,
                     debugging, and explaining Sqids behavior during development.
                 </p>
             </section>
 
-            <section aria-labelledby="how-to-use-sqid-wasm" style="margin-top:2rem;">
-                <h2 id="how-to-use-sqid-wasm" style="font-size:1.5rem;margin-bottom:1rem;">How to Use SQID-WASM</h2>
+            <section aria-labelledby="how-to-use-sqid-wasm">
+                <h2 id="how-to-use-sqid-wasm">How to Use SQID-WASM</h2>
                 <ol>
                     <li>Select Number to encode numbers into a Sqid, or select SQID to decode an existing Sqid.</li>
-                    <li>Enter one or more non-negative numbers, or paste a Sqid string into the input field.</li>
+                    <li>Enter one or more non-negative numbers separated by commas (or press Random), or paste one or more Sqids separated by commas. Each item is converted on its own.</li>
                     <li>Use the swap control to switch between encode and decode modes.</li>
                     <li>Review the result and copy it when needed.</li>
                 </ol>
@@ -380,7 +379,7 @@
                     <caption class="visually-hidden">Example conversions between numbers and Sqids</caption>
                     <thead>
                     <tr>
-                        <th scope="col">Input (Number)</th>
+                        <th scope="col">Input (Numbers)</th>
                         <th scope="col">Output (Sqid)</th>
                     </tr>
                     </thead>
@@ -397,12 +396,16 @@
                         <td>117</td>
                         <td>6Vs</td>
                     </tr>
+                    <tr>
+                        <td>1, 2, 3</td>
+                        <td>Uk, gb, Ef</td>
+                    </tr>
                     </tbody>
                 </table>
             </section>
 
-            <section aria-labelledby="why-use-sqids" style="margin-top:2rem;">
-                <h2 id="why-use-sqids" style="font-size:1.5rem;margin-bottom:1rem;">Why Use Sqids?</h2>
+            <section aria-labelledby="why-use-sqids">
+                <h2 id="why-use-sqids">Why Use Sqids?</h2>
                 <ul>
                     <li><strong>Good for:</strong> exposing database IDs in URLs, encoding multiple numeric values into one identifier, and generating short, readable references.</li>
                     <li><strong>Not good for:</strong> protecting sensitive data or replacing encryption.</li>
@@ -410,11 +413,11 @@
                 </ul>
             </section>
 
-            <section aria-labelledby="sqid-faq" style="margin-top:2rem;">
-                <h2 id="sqid-faq" style="font-size:1.5rem;margin-bottom:1rem;">Frequently Asked Questions</h2>
+            <section aria-labelledby="sqid-faq">
+                <h2 id="sqid-faq">Frequently Asked Questions</h2>
                 <details>
                     <summary>What numbers can I encode?</summary>
-                    <p>Non-negative integers, either as one value or multiple values encoded into a single Sqid.</p>
+                    <p>Any non-negative integer from 0 up to 18446744073709551615. Enter several separated by commas (e.g. 1, 2, 3) to get one Sqid per number (e.g. Uk, gb, Ef).</p>
                 </details>
                 <details>
                     <summary>Is this secure for sensitive data?</summary>
@@ -435,7 +438,7 @@
 </div>
 
 <footer class="app-footer" role="contentinfo">
-    <p>&copy; 2025 Farid Ghoorchian. Based on <a href="https://sqids.org/" target="_blank" rel="noopener noreferrer"
+    <p>&copy; 2025–2026 Farid Ghoorchian. Based on <a href="https://sqids.org/" target="_blank" rel="noopener noreferrer"
                                                  title="Official Sqids website">Sqids</a>. All rights reserved. <a
                 href="https://farid-ghr.pro/" title="Visit Farid Ghoorchian's homepage">Home</a> | <a
                 href="https://github.com/faridgh1991" target="_blank" rel="noopener noreferrer"
@@ -445,22 +448,5 @@
 <script src="wasm_exec.js"></script>
 <script src="script.js"></script>
 
-<style>
-    .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        border: 0;
-    }
-
-    .seo-content {
-        font-family: 'Roboto', sans-serif;
-        color: #333;
-    }
-</style>
 </body>
 </html>

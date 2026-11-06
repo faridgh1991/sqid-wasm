@@ -3,6 +3,32 @@ const go = new Go();
 // no-cache = revalidate each load (cheap 304), so a rebuilt binary is never shadowed by a stale cached copy
 const wasmPromise = WebAssembly.instantiateStreaming(fetch("sqids.wasm", {cache: "no-cache"}), go.importObject);
 
+// --- Theme toggle (independent of WASM, so it works even if loading fails) ---
+// The initial theme is set by the inline script in <head> to avoid a flash.
+const themeToggle = document.getElementById("themeToggle");
+
+function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    const label = `Switch to ${theme === "dark" ? "light" : "dark"} theme`;
+    themeToggle.setAttribute("aria-label", label);
+    themeToggle.title = label;
+}
+
+applyTheme(document.documentElement.dataset.theme);
+
+themeToggle.addEventListener("click", () => {
+    const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    applyTheme(theme);
+    try { localStorage.setItem("theme", theme); } catch (e) { /* storage blocked: choice lasts this visit */ }
+});
+
+// Follow system theme changes until the user picks one
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+    let saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (err) { /* storage blocked */ }
+    if (!saved) applyTheme(e.matches ? "dark" : "light");
+});
+
 // --- 2. Create a promise that resolves when the DOM is ready ---
 const domReadyPromise = new Promise(resolve => {
     if (document.readyState === "loading") {

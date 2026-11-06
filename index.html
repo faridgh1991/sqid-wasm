@@ -119,6 +119,7 @@
             "featureList": [
                 "Encode numbers to Sqids",
                 "Decode Sqids to numbers",
+                "Convert comma-separated lists in one go",
                 "WebAssembly-powered for speed",
                 "URL-safe ID generation",
                 "Privacy-focused (client-side processing)",
@@ -164,7 +165,7 @@
         {
             "@context": "https://schema.org",
             "@type": "HowTo",
-            "name": "How to Generate Sqids Using SQID-WASM",
+            "name": "How to Encode and Decode Sqids Online",
             "description": "Step-by-step guide to encode numbers into short unique IDs using the SQID-WASM tool",
             "step": [
                 {
@@ -183,13 +184,13 @@
                     "@type": "HowToStep",
                     "position": 3,
                     "name": "View Result",
-                    "text": "The encoded or decoded result appears instantly in the output panel"
+                    "text": "The result updates instantly as you type"
                 },
                 {
                     "@type": "HowToStep",
                     "position": 4,
                     "name": "Copy Result",
-                    "text": "Click the copy button to copy the result to your clipboard"
+                    "text": "Copy the result, or use the swap button to decode it back and check the round trip"
                 }
             ]
         }
@@ -205,31 +206,63 @@
                     "name": "What numbers can I encode?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "Any non-negative integer from 0 up to 18446744073709551615 (the 64-bit unsigned maximum). Enter several separated by commas (e.g. 1, 2, 3) to get one Sqid per number (e.g. Uk, gb, Ef)."
+                        "text": "Any whole number from 0 up to 18,446,744,073,709,551,615 (the largest unsigned 64-bit integer). Negative numbers and decimals are not supported. To convert several at once, separate them with commas: 1, 2, 3 becomes Uk, gb, Ef."
                     }
                 },
                 {
                     "@type": "Question",
-                    "name": "Is this secure for sensitive data?",
+                    "name": "Are Sqids secure or encrypted?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "No. Sqids is designed for readable identifiers, not encryption or protection of sensitive data."
+                        "text": "No. Sqids is an encoding, not encryption. Anyone who knows the alphabet can decode a Sqid back to its number, so never use Sqids for passwords, tokens, or anything that must stay secret."
                     }
                 },
                 {
                     "@type": "Question",
-                    "name": "How does it differ from UUIDs?",
+                    "name": "Will I get the same Sqid every time?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "Sqids are shorter and derived from numbers, while UUIDs are longer and intended for different uniqueness and randomness properties."
+                        "text": "Yes. Encoding is deterministic: the same number always produces the same Sqid with the same settings. This tool uses the default Sqids alphabet and no minimum length, so its results match any official Sqids library running with default settings."
                     }
                 },
                 {
                     "@type": "Question",
-                    "name": "Can I customize the alphabet?",
+                    "name": "Can I use a custom alphabet or a minimum length?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "Yes. Sqids supports custom alphabets. Check the Sqids documentation for implementation details."
+                        "text": "The Sqids libraries let you shuffle your own alphabet and pad IDs to a minimum length, which changes the output. This tool uses the defaults; configure the options in your own code if you need them."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "What happens if one Sqid contains several numbers?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Sqids can pack multiple numbers into a single ID. If you decode one, all of its numbers are shown. For example, 86Rf07 decodes to 1, 2, 3."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Is Sqids the same as Hashids?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Sqids is the successor to Hashids, from the same authors. The algorithm is different, so a Hashids ID cannot be decoded as a Sqid and vice versa."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "How are Sqids different from UUIDs?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "A UUID is a 36-character random identifier generated without a database. A Sqid is a short encoding of a number you already have, such as an auto-increment ID, and can be decoded back to it."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Is my data sent anywhere?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "No. Encoding and decoding run entirely in your browser with WebAssembly. Nothing you type is uploaded to a server."
                     }
                 }
             ]
@@ -261,16 +294,16 @@
             <header>
                 <h1>Free Online Sqids Encoder and Decoder</h1>
                 <p>
-                    SQID-WASM is a browser-based Sqids encoder and decoder for developers who need short, unique,
-                    URL-safe IDs from one or more non-negative numbers. Everything runs locally in your browser with
-                    Go-powered WebAssembly, so no input is sent to a server.
+                    Turn numbers into short, URL-safe IDs like <code>EwF</code> and decode them back, instantly.
+                    Enter one number or a comma-separated list. Everything runs in your browser with WebAssembly,
+                    so your data never leaves your device.
                 </p>
             </header>
         </article>
 
         <noscript>
             <section class="seo-content">
-                <p class="notice">This tool requires JavaScript and WebAssembly to run. You can still use the content on this page to learn what SQID-WASM does and when to use Sqids.</p>
+                <p class="notice">This tool needs JavaScript and WebAssembly. Enable JavaScript to encode and decode; the guide below still explains how Sqids work.</p>
             </section>
         </noscript>
 
@@ -301,7 +334,7 @@
                 <section class="panel panel-input" id="panel-input" aria-labelledby="input-label">
                     <label for="sourceInput" id="input-label" class="visually-hidden">Input numbers or Sqid to convert</label>
                     <textarea id="sourceInput" class="text-area" maxlength="5000"
-                              placeholder="Enter numbers to encode, e.g. 1, 2, 3"
+                              placeholder="e.g. 1, 2, 3"
                               autocomplete="off" spellcheck="false"
                               aria-describedby="input-help"></textarea>
                     <div class="panel-toolbar">
@@ -351,36 +384,39 @@
         </section>
 
         <article class="seo-content">
-            <section aria-labelledby="what-is-sqid-wasm">
-                <h2 id="what-is-sqid-wasm">What Is SQID-WASM?</h2>
+            <section aria-labelledby="what-is-a-sqid">
+                <h2 id="what-is-a-sqid">What Is a Sqid?</h2>
                 <p>
-                    SQID-WASM is an online tool built on <a href="https://sqids.org/" target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            title="Learn more about Sqids">Sqids</a>, an open-source
-                    library for turning numbers into short, human-friendly identifiers. It is useful when you want IDs
-                    that are cleaner than raw database integers and shorter than many alternative formats.
+                    A Sqid (pronounced "squid") is a short ID generated from a number by the open-source
+                    <a href="https://sqids.org/" target="_blank" rel="noopener noreferrer">Sqids</a> library.
+                    Instead of showing a raw database ID such as <code>/orders/127</code>, you can show
+                    <code>/orders/EwF</code>: shorter, easier to read, and it doesn't reveal how many records you have
+                    at a glance.
                 </p>
                 <p>
-                    Because the encoder and decoder run in the browser, the page works well for quick testing,
-                    debugging, and explaining Sqids behavior during development.
+                    Sqids are made only of letters and digits, so they are safe in URLs. The same number always gives
+                    the same Sqid, and a built-in blocklist keeps common profanity out of generated IDs.
                 </p>
             </section>
 
             <section aria-labelledby="how-to-use-sqid-wasm">
-                <h2 id="how-to-use-sqid-wasm">How to Use SQID-WASM</h2>
+                <h2 id="how-to-use-sqid-wasm">How to Use This Tool</h2>
                 <ol>
-                    <li>Select Number to encode numbers into a Sqid, or select SQID to decode an existing Sqid.</li>
-                    <li>Enter one or more non-negative numbers separated by commas (or press Random), or paste one or more Sqids separated by commas. Each item is converted on its own.</li>
-                    <li>Use the swap control to switch between encode and decode modes.</li>
-                    <li>Review the result and copy it when needed.</li>
+                    <li><strong>Pick a direction.</strong> Choose <em>Number</em> to encode, or <em>SQID</em> to decode.</li>
+                    <li><strong>Enter your input.</strong> Type a number, paste a Sqid, or separate several with
+                        commas. Each item is converted on its own. Press <em>Random</em> to try a unique 64-bit ID.</li>
+                    <li><strong>Read the result.</strong> It updates as you type.</li>
+                    <li><strong>Copy or swap.</strong> Copy the result, or use the swap button to feed it back in and
+                        check the round trip.</li>
                 </ol>
+
                 <h3>Examples</h3>
                 <table>
                     <caption class="visually-hidden">Example conversions between numbers and Sqids</caption>
                     <thead>
                     <tr>
-                        <th scope="col">Input (Numbers)</th>
-                        <th scope="col">Output (Sqid)</th>
+                        <th scope="col">Number(s)</th>
+                        <th scope="col">Sqid(s)</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -393,44 +429,65 @@
                         <td>A6da</td>
                     </tr>
                     <tr>
-                        <td>117</td>
-                        <td>6Vs</td>
-                    </tr>
-                    <tr>
                         <td>1, 2, 3</td>
                         <td>Uk, gb, Ef</td>
+                    </tr>
+                    <tr>
+                        <td>2118593200604377088</td>
+                        <td>QR5ZM4PoIDSD</td>
                     </tr>
                     </tbody>
                 </table>
             </section>
 
-            <section aria-labelledby="why-use-sqids">
-                <h2 id="why-use-sqids">Why Use Sqids?</h2>
+            <section aria-labelledby="when-to-use-sqids">
+                <h2 id="when-to-use-sqids">When to Use Sqids</h2>
                 <ul>
-                    <li><strong>Good for:</strong> exposing database IDs in URLs, encoding multiple numeric values into one identifier, and generating short, readable references.</li>
-                    <li><strong>Not good for:</strong> protecting sensitive data or replacing encryption.</li>
-                    <li><strong>Main benefits:</strong> short output, URL-safe characters, profanity filtering, and deterministic encoding.</li>
+                    <li><strong>Public URLs:</strong> replace numeric IDs in links, such as <code>/user/EwF</code>
+                        instead of <code>/user/127</code>.</li>
+                    <li><strong>Short references:</strong> order numbers, invite codes, ticket IDs, and short links
+                        that people may read aloud or type.</li>
+                    <li><strong>Hiding sequence at a glance:</strong> consecutive IDs don't look consecutive.</li>
                 </ul>
+                <p>
+                    <strong>Don't use Sqids for security.</strong> Anyone who knows the alphabet can decode them, so
+                    they are not a replacement for encryption, access control, or secret tokens.
+                </p>
             </section>
 
             <section aria-labelledby="sqid-faq">
                 <h2 id="sqid-faq">Frequently Asked Questions</h2>
                 <details>
                     <summary>What numbers can I encode?</summary>
-                    <p>Any non-negative integer from 0 up to 18446744073709551615. Enter several separated by commas (e.g. 1, 2, 3) to get one Sqid per number (e.g. Uk, gb, Ef).</p>
+                    <p>Any whole number from 0 up to 18,446,744,073,709,551,615 (the largest unsigned 64-bit integer). Negative numbers and decimals are not supported. To convert several at once, separate them with commas: <code>1, 2, 3</code> becomes <code>Uk, gb, Ef</code>.</p>
                 </details>
                 <details>
-                    <summary>Is this secure for sensitive data?</summary>
-                    <p>No. Sqids is intended for readable identifiers, not encryption or secure token generation.</p>
+                    <summary>Are Sqids secure or encrypted?</summary>
+                    <p>No. Sqids is an encoding, not encryption. Anyone who knows the alphabet can decode a Sqid back to its number, so never use Sqids for passwords, tokens, or anything that must stay secret.</p>
                 </details>
                 <details>
-                    <summary>How does it differ from UUIDs?</summary>
-                    <p>Sqids are shorter and based on numeric input. UUIDs are longer and optimized for different
-                        uniqueness and randomness requirements.</p>
+                    <summary>Will I get the same Sqid every time?</summary>
+                    <p>Yes. Encoding is deterministic: the same number always produces the same Sqid with the same settings. This tool uses the default Sqids alphabet and no minimum length, so its results match any official Sqids library running with default settings.</p>
                 </details>
                 <details>
-                    <summary>Can I customize the alphabet?</summary>
-                    <p>Yes. Sqids supports custom alphabets. See the Sqids documentation for implementation details.</p>
+                    <summary>Can I use a custom alphabet or a minimum length?</summary>
+                    <p>The Sqids libraries let you shuffle your own alphabet and pad IDs to a minimum length, which changes the output. This tool uses the defaults; configure the options in your own code if you need them.</p>
+                </details>
+                <details>
+                    <summary>What happens if one Sqid contains several numbers?</summary>
+                    <p>Sqids can pack multiple numbers into a single ID. If you decode one, all of its numbers are shown. For example, <code>86Rf07</code> decodes to <code>1, 2, 3</code>.</p>
+                </details>
+                <details>
+                    <summary>Is Sqids the same as Hashids?</summary>
+                    <p>Sqids is the successor to Hashids, from the same authors. The algorithm is different, so a Hashids ID cannot be decoded as a Sqid and vice versa.</p>
+                </details>
+                <details>
+                    <summary>How are Sqids different from UUIDs?</summary>
+                    <p>A UUID is a 36-character random identifier generated without a database. A Sqid is a short encoding of a number you already have, such as an auto-increment ID, and can be decoded back to it.</p>
+                </details>
+                <details>
+                    <summary>Is my data sent anywhere?</summary>
+                    <p>No. Encoding and decoding run entirely in your browser with WebAssembly. Nothing you type is uploaded to a server.</p>
                 </details>
             </section>
         </article>
@@ -438,11 +495,11 @@
 </div>
 
 <footer class="app-footer" role="contentinfo">
-    <p>&copy; 2025–2026 Farid Ghoorchian. Based on <a href="https://sqids.org/" target="_blank" rel="noopener noreferrer"
-                                                 title="Official Sqids website">Sqids</a>. All rights reserved. <a
-                href="https://farid-ghr.pro/" title="Visit Farid Ghoorchian's homepage">Home</a> | <a
-                href="https://github.com/faridgh1991" target="_blank" rel="noopener noreferrer"
-                title="View GitHub profile">GitHub</a></p>
+    <p>&copy; 2025–2026 Farid Ghoorchian · Built with
+        <a href="https://sqids.org/" target="_blank" rel="noopener noreferrer">Sqids</a> and
+        <a href="https://tinygo.org/" target="_blank" rel="noopener noreferrer">TinyGo</a> ·
+        <a href="https://farid-ghr.pro/">Home</a> ·
+        <a href="https://github.com/faridgh1991/sqid-wasm" target="_blank" rel="noopener noreferrer">Source on GitHub</a></p>
 </footer>
 
 <script src="wasm_exec.js"></script>

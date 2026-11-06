@@ -169,7 +169,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
             tab.setAttribute('aria-pressed', String(isActive));
         });
 
-        sourceInput.placeholder = state.sourceMode === 'number' ? "Enter numbers to encode, e.g. 1, 2, 3" : "Paste Sqids to decode, e.g. Uk, gb, Ef";
+        sourceInput.placeholder = state.sourceMode === 'number' ? "e.g. 1, 2, 3" : "e.g. Uk, gb, Ef";
     }
 
     function copyToClipboard(text, button) {

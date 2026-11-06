@@ -1,6 +1,33 @@
 // --- 1. Start WebAssembly loading immediately ---
 const go = new Go();
-const wasmPromise = WebAssembly.instantiateStreaming(fetch("sqids.wasm"), go.importObject);
+// no-cache = revalidate each load (cheap 304), so a rebuilt binary is never shadowed by a stale cached copy
+const wasmPromise = WebAssembly.instantiateStreaming(fetch("sqids.wasm", {cache: "no-cache"}), go.importObject);
+
+// --- Theme toggle (independent of WASM, so it works even if loading fails) ---
+// The initial theme is set by the inline script in <head> to avoid a flash.
+const themeToggle = document.getElementById("themeToggle");
+
+function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    const label = `Switch to ${theme === "dark" ? "light" : "dark"} theme`;
+    themeToggle.setAttribute("aria-label", label);
+    themeToggle.title = label;
+}
+
+applyTheme(document.documentElement.dataset.theme);
+
+themeToggle.addEventListener("click", () => {
+    const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    applyTheme(theme);
+    try { localStorage.setItem("theme", theme); } catch (e) { /* storage blocked: choice lasts this visit */ }
+});
+
+// Follow system theme changes until the user picks one
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+    let saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (err) { /* storage blocked */ }
+    if (!saved) applyTheme(e.matches ? "dark" : "light");
+});
 
 // --- 2. Create a promise that resolves when the DOM is ready ---
 const domReadyPromise = new Promise(resolve => {
@@ -36,6 +63,8 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
     const sourceModeTabs = document.getElementById("source-mode-tabs");
     const charCount = document.getElementById("charCount");
     const randomBtn = document.getElementById("randomBtn");
+    const copyStatus = document.getElementById("copyStatus");
+    const copyTooltip = copyBtn.querySelector(".copy-tooltip");
 
     // --- Event Listeners ---
     sourceInput.addEventListener("input", handleConversion);
@@ -76,23 +105,12 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
             return;
         }
 
-        let result;
+        // WASM validates each line and reports failures as "Error: line N: ..." strings
+        const result = state.sourceMode === 'number' ? encodeSqid(inputText) : decodeSqid(inputText);
         let error = null;
-
-        if (state.sourceMode === 'number') {
-            if (!/^\d+(\s*,\s*\d+)*$/.test(inputText)) {
-                error = "Input must be valid non-negative numbers separated by commas.";
-            } else {
-                result = encodeSqid(inputText);
-                if (typeof result === 'string' && result.startsWith("Error:")) {
-                    error = result;
-                }
-            }
-        } else { // sourceMode is 'sqid'
-            result = decodeSqid(inputText);
-            if (!result || (typeof result === 'string' && result.startsWith("Error:"))) {
-                error = "Not a valid Sqid. Check for invalid characters or length.";
-            }
+        if (typeof result !== 'string' || result.startsWith("Error:")) {
+            const msg = String(result).replace(/^Error:\s*/, '');
+            error = msg.charAt(0).toUpperCase() + msg.slice(1);
         }
 
         // Limit cache size to prevent memory leak
@@ -158,22 +176,39 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
 
     function updateUI() {
         document.querySelectorAll('.mode-tab').forEach(tab => {
-            const isSourceTab = tab.parentElement.id === 'source-mode-tabs';
-            const isActive = isSourceTab ? tab.dataset.mode === state.sourceMode : tab.dataset.mode === state.targetMode;
+            const isActive = tab.dataset.mode === state.sourceMode;
             tab.classList.toggle('active', isActive);
+            tab.setAttribute('aria-pressed', String(isActive));
         });
 
-        sourceInput.placeholder = state.sourceMode === 'number' ? "Enter non-negative numbers to encode (e.g., 1, 2, 3)..." : "Enter a Sqid to decode...";
+        document.getElementById('input-label').textContent = state.sourceMode === 'number' ? 'Numbers' : 'Sqids';
+        document.getElementById('output-label').textContent = state.sourceMode === 'number' ? 'Sqids' : 'Numbers';
+        sourceInput.placeholder = state.sourceMode === 'number' ? "e.g. 1, 2, 3\n127" : "e.g. 86Rf07\nEwF";
     }
 
     function copyToClipboard(text, button) {
         if (!text || outputDiv.classList.contains('error-box')) return;
         navigator.clipboard.writeText(text).then(() => {
             button.classList.add("copied");
+            copyStatus.textContent = "Copied to clipboard";
             setTimeout(() => {
                 button.classList.remove("copied");
+                copyStatus.textContent = "";
             }, 2000);
         }).catch(err => {
+            // Clipboard can be blocked (permissions, insecure context): select the text so the user can copy it manually
+            const range = document.createRange();
+            range.selectNodeContents(outputDiv);
+            getSelection().removeAllRanges();
+            getSelection().addRange(range);
+            copyStatus.textContent = "Copy blocked. Result selected, press Ctrl+C or ⌘C.";
+            copyTooltip.textContent = "Press Ctrl+C / ⌘C";
+            button.classList.add("copied");
+            setTimeout(() => {
+                button.classList.remove("copied");
+                copyTooltip.textContent = "Copied!";
+                copyStatus.textContent = "";
+            }, 3000);
             console.error('Failed to copy text: ', err);
         });
     }
@@ -206,5 +241,9 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
 
 }).catch((err) => {
     console.error("Failed to initialize the application:", err);
-    document.body.innerHTML = `<p style="color: red; text-align: center; padding: 50px;"><strong>Error:</strong> Application could not start. Please check the console.</p>`;
+    // Keep the page content (and SEO text) intact; only report the failure in the output panel.
+    const output = document.getElementById("output");
+    output.textContent = "This tool could not start. Your browser may not support WebAssembly.";
+    output.classList.add("error-box");
+    document.getElementById("output-container").classList.add("input-has-text");
 });

@@ -314,7 +314,8 @@ code {
     animation: resultFadeIn 0.3s;
     color: var(--primary-text);
     font-weight: 500;
-    font-size: 1.4rem;
+    font-size: 1.15rem; /* same as input so result lines sit beside their input lines */
+    white-space: pre-wrap; /* one result per input line */
     word-break: break-all;
     background: var(--result-background);
     padding: 1rem;

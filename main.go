@@ -17,32 +17,30 @@ func encodeSqid(_ js.Value, args []js.Value) interface{} {
 		return js.ValueOf("Error: Missing input")
 	}
 
-	input := strings.TrimSpace(args[0].String())
-	if input == "" {
-		return js.ValueOf("Error: Empty input")
+	// One Sqid per line; comma-separated numbers on a line share one Sqid.
+	// Blank lines stay blank so output lines up with input.
+	lines := strings.Split(args[0].String(), "\n")
+	for i, line := range lines {
+		if strings.TrimSpace(line) == "" {
+			lines[i] = ""
+			continue
+		}
+		var numbers []uint64
+		for _, part := range strings.Split(line, ",") {
+			n, err := strconv.ParseUint(strings.TrimSpace(part), 10, 64)
+			if err != nil {
+				return js.ValueOf(fmt.Sprintf("Error: line %d: %q is not a valid number (0 to 18446744073709551615)", i+1, strings.TrimSpace(part)))
+			}
+			numbers = append(numbers, n)
+		}
+		id, err := sqids.EncodeUint64s(numbers)
+		if err != nil {
+			return js.ValueOf(fmt.Sprintf("Error: line %d: %s", i+1, err))
+		}
+		lines[i] = id
 	}
 
-	// Each comma-separated number gets its own Sqid: "1, 2, 3" -> "Uk, ..., ..."
-	parts := strings.Split(input, ",")
-	ids := make([]string, 0, len(parts))
-
-	for _, part := range parts {
-		part = strings.TrimSpace(part)
-		if part == "" {
-			return js.ValueOf("Error: Empty number in list")
-		}
-		parsedUint, err := strconv.ParseUint(part, 10, 64)
-		if err != nil {
-			return js.ValueOf("Error: " + err.Error())
-		}
-		id, err := sqids.EncodeUint64(parsedUint)
-		if err != nil {
-			return js.ValueOf("Error: " + err.Error())
-		}
-		ids = append(ids, id)
-	}
-
-	return js.ValueOf(strings.Join(ids, ", "))
+	return js.ValueOf(strings.Join(lines, "\n"))
 }
 
 func decodeSqid(_ js.Value, args []js.Value) interface{} {
@@ -50,24 +48,25 @@ func decodeSqid(_ js.Value, args []js.Value) interface{} {
 		return js.ValueOf("Error: Missing input")
 	}
 
-	// Mirror of encode: each comma-separated Sqid is decoded on its own.
-	// A Sqid that itself holds several numbers contributes all of them.
-	var strNums []string
-	for _, part := range strings.Split(args[0].String(), ",") {
-		part = strings.TrimSpace(part)
-		if part == "" {
-			return js.ValueOf("Error: Empty Sqid in list")
+	lines := strings.Split(args[0].String(), "\n")
+	for i, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			lines[i] = ""
+			continue
 		}
-		numbers, err := sqids.DecodeString(part)
+		numbers, err := sqids.DecodeString(line)
 		if err != nil {
-			return js.ValueOf("Error: " + err.Error())
+			return js.ValueOf(fmt.Sprintf("Error: line %d: %q is not a valid Sqid", i+1, line))
 		}
-		for _, num := range numbers {
-			strNums = append(strNums, strconv.FormatUint(num, 10))
+		strs := make([]string, len(numbers))
+		for j, n := range numbers {
+			strs[j] = strconv.FormatUint(n, 10)
 		}
+		lines[i] = strings.Join(strs, ", ")
 	}
 
-	return js.ValueOf(strings.Join(strNums, ", "))
+	return js.ValueOf(strings.Join(lines, "\n"))
 }
 
 func generateRandomID(_ js.Value, _ []js.Value) interface{} {

@@ -79,25 +79,12 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
             return;
         }
 
-        let result;
+        // WASM validates each line and reports failures as "Error: line N: ..." strings
+        const result = state.sourceMode === 'number' ? encodeSqid(inputText) : decodeSqid(inputText);
         let error = null;
-
-        if (state.sourceMode === 'number') {
-            if (!/^\d+(\s*,\s*\d+)*$/.test(inputText)) {
-                error = "Enter digits only, separated by commas, e.g. 1, 2, 3.";
-            } else {
-                result = encodeSqid(inputText);
-                if (typeof result === 'string' && result.startsWith("Error:")) {
-                    error = result.includes("out of range")
-                        ? "A number is too large. Maximum is 18446744073709551615."
-                        : result;
-                }
-            }
-        } else { // sourceMode is 'sqid'
-            result = decodeSqid(inputText);
-            if (!result || (typeof result === 'string' && result.startsWith("Error:"))) {
-                error = "Not a valid Sqid. Use letters and digits, separated by commas, e.g. Uk, gb, Ef.";
-            }
+        if (typeof result !== 'string' || result.startsWith("Error:")) {
+            const msg = String(result).replace(/^Error:\s*/, '');
+            error = msg.charAt(0).toUpperCase() + msg.slice(1);
         }
 
         // Limit cache size to prevent memory leak
@@ -169,7 +156,7 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
             tab.setAttribute('aria-pressed', String(isActive));
         });
 
-        sourceInput.placeholder = state.sourceMode === 'number' ? "e.g. 1, 2, 3" : "e.g. Uk, gb, Ef";
+        sourceInput.placeholder = state.sourceMode === 'number' ? "e.g. 1, 2, 3\n127" : "e.g. 86Rf07\nEwF";
     }
 
     function copyToClipboard(text, button) {

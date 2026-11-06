@@ -1,252 +1,192 @@
-// --- 1. Start WebAssembly loading immediately ---
+// Loaded at the end of <body>, so the DOM is already parsed when this runs.
+
+// --- Start WebAssembly loading immediately ---
 const go = new Go();
 // no-cache = revalidate each load (cheap 304), so a rebuilt binary is never shadowed by a stale cached copy
 const wasmPromise = WebAssembly.instantiateStreaming(fetch("sqids.wasm", {cache: "no-cache"}), go.importObject);
 
 // --- Theme toggle (independent of WASM, so it works even if loading fails) ---
 // The initial theme is set by the inline script in <head> to avoid a flash.
+const root = document.documentElement;
 const themeToggle = document.getElementById("themeToggle");
 
 function applyTheme(theme) {
-    document.documentElement.dataset.theme = theme;
+    root.dataset.theme = theme;
     const label = `Switch to ${theme === "dark" ? "light" : "dark"} theme`;
     themeToggle.setAttribute("aria-label", label);
     themeToggle.title = label;
 }
 
-applyTheme(document.documentElement.dataset.theme);
+function savedTheme() {
+    try { return localStorage.getItem("theme"); } catch { return null; } // storage blocked
+}
+
+applyTheme(root.dataset.theme);
 
 themeToggle.addEventListener("click", () => {
-    const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    const theme = root.dataset.theme === "dark" ? "light" : "dark";
     applyTheme(theme);
-    try { localStorage.setItem("theme", theme); } catch (e) { /* storage blocked: choice lasts this visit */ }
+    try { localStorage.setItem("theme", theme); } catch { /* storage blocked: choice lasts this visit */ }
 });
 
 // Follow system theme changes until the user picks one
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
-    let saved = null;
-    try { saved = localStorage.getItem("theme"); } catch (err) { /* storage blocked */ }
-    if (!saved) applyTheme(e.matches ? "dark" : "light");
+    if (!savedTheme()) applyTheme(e.matches ? "dark" : "light");
 });
 
-// --- 2. Create a promise that resolves when the DOM is ready ---
-const domReadyPromise = new Promise(resolve => {
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", resolve, {once: true});
-    } else {
-        resolve();
-    }
-});
+// --- DOM elements ---
+const sourceInput = document.getElementById("sourceInput");
+const outputDiv = document.getElementById("output");
+const outputContainer = document.getElementById("output-container");
+const panelInput = document.getElementById("panel-input");
+const modeTabs = document.querySelectorAll("#source-mode-tabs .mode-tab");
+const inputLabel = document.getElementById("input-label");
+const outputLabel = document.getElementById("output-label");
+const swapBtn = document.getElementById("swapBtn");
+const copyBtn = document.getElementById("copyBtn");
+const copyTooltip = copyBtn.querySelector(".copy-tooltip");
+const copyStatus = document.getElementById("copyStatus");
+const charCount = document.getElementById("charCount");
+const randomBtn = document.getElementById("randomBtn");
 
-// --- 3. Run after WASM and DOM are both ready ---
-Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
-    go.run(wasmResult.instance);
-    console.log("WASM Module and DOM are both ready.");
+function showOutput(text, isError) {
+    outputDiv.textContent = text;
+    outputDiv.classList.toggle("error-box", isError);
+    outputContainer.classList.toggle("input-has-text", text !== "");
+}
 
-    // --- Application State ---
-    let state = {
-        sourceMode: 'number', targetMode: 'sqid'
-    };
+// --- App (needs the WASM functions encodeSqid / decodeSqid / generateRandomID) ---
+wasmPromise.then(({instance}) => {
+    go.run(instance);
 
-    // ⚡ Bolt: Cache previously computed values to avoid synchronous WASM boundary execution penalty
-    const conversionCache = new Map();
+    let mode = "number"; // "number" = encode, "sqid" = decode
+
+    // ⚡ Bolt: LRU cache of results to skip the synchronous WASM call for repeated inputs.
+    // A Map keeps insertion order, so the first key is always the least recently used.
     const CACHE_LIMIT = 1000;
-    // ⚡ Bolt: Track normalized inputs to prevent redundant processing pipelines
-    let lastProcessedKey = '';
+    const cache = new Map();
+    // ⚡ Bolt: skip work when the trimmed input and mode haven't changed (e.g. trailing spaces)
+    let lastKey = "";
 
-    // --- DOM Element Selection ---
-    const sourceInput = document.getElementById("sourceInput");
-    const outputDiv = document.getElementById("output");
-    const outputContainer = document.getElementById("output-container");
-    const panelInput = document.getElementById("panel-input");
-    const swapBtn = document.getElementById("swapBtn");
-    const copyBtn = document.getElementById("copyBtn");
-    const sourceModeTabs = document.getElementById("source-mode-tabs");
-    const charCount = document.getElementById("charCount");
-    const randomBtn = document.getElementById("randomBtn");
-    const copyStatus = document.getElementById("copyStatus");
-    const copyTooltip = copyBtn.querySelector(".copy-tooltip");
-
-    // --- Event Listeners ---
-    sourceInput.addEventListener("input", handleConversion);
-    sourceInput.addEventListener("focus", () => panelInput.classList.add('focused'));
-    sourceInput.addEventListener("blur", () => panelInput.classList.remove('focused'));
-    swapBtn.addEventListener("click", handleSwap);
-    copyBtn.addEventListener("click", () => copyToClipboard(outputDiv.textContent, copyBtn));
-    randomBtn.addEventListener("click", handleRandomGenerate);
-
-    sourceModeTabs.addEventListener("click", (e) => {
-        if (e.target.matches(".mode-tab")) {
-            state.sourceMode = e.target.dataset.mode;
-            state.targetMode = state.sourceMode === 'number' ? 'sqid' : 'number';
-            updateUI();
-            handleConversion(true);
+    function convert(text) {
+        const key = `${mode}:${text}`;
+        let entry = cache.get(key);
+        if (entry) {
+            cache.delete(key); // re-insert below to mark as most recently used
+        } else {
+            // WASM validates each line and reports failures as "Error: line N: ..." strings
+            const result = String(mode === "number" ? encodeSqid(text) : decodeSqid(text));
+            const isError = result.startsWith("Error:");
+            const msg = isError ? result.replace(/^Error:\s*/, "") : result;
+            entry = {text: isError ? msg.charAt(0).toUpperCase() + msg.slice(1) : msg, isError};
+            if (cache.size >= CACHE_LIMIT) cache.delete(cache.keys().next().value);
         }
+        cache.set(key, entry);
+        showOutput(entry.text, entry.isError);
+    }
+
+    // ⚡ Bolt: debounce WASM calls while typing
+    let debounceTimer;
+
+    function update({immediate = false} = {}) {
+        const text = sourceInput.value.trim();
+        charCount.textContent = `${sourceInput.value.length} / ${sourceInput.maxLength}`;
+
+        const key = `${mode}:${text}`;
+        if (key === lastKey && !immediate) return;
+        lastKey = key;
+        clearTimeout(debounceTimer);
+
+        if (!text) {
+            showOutput("", false);
+        } else if (immediate) {
+            convert(text);
+        } else {
+            debounceTimer = setTimeout(convert, 250, text);
+        }
+    }
+
+    function setMode(newMode) {
+        mode = newMode;
+        const encoding = mode === "number";
+        modeTabs.forEach((tab) => {
+            const active = tab.dataset.mode === mode;
+            tab.classList.toggle("active", active);
+            tab.setAttribute("aria-pressed", String(active));
+        });
+        inputLabel.textContent = encoding ? "Numbers" : "Sqids";
+        outputLabel.textContent = encoding ? "Sqids" : "Numbers";
+        sourceInput.placeholder = encoding ? "e.g. 1, 2, 3\n127" : "e.g. 86Rf07\nEwF";
+    }
+
+    // --- Copy, with feedback that never overlaps a previous click ---
+    let copyTimer;
+
+    function flashCopied(tooltip, status, ms) {
+        clearTimeout(copyTimer);
+        copyTooltip.textContent = tooltip;
+        copyStatus.textContent = status;
+        copyBtn.classList.add("copied");
+        copyTimer = setTimeout(() => {
+            copyBtn.classList.remove("copied");
+            copyTooltip.textContent = "Copied!";
+            copyStatus.textContent = "";
+        }, ms);
+    }
+
+    async function copyResult() {
+        const text = outputDiv.textContent;
+        if (!text || outputDiv.classList.contains("error-box")) return;
+        try {
+            await navigator.clipboard.writeText(text);
+            flashCopied("Copied!", "Copied to clipboard", 2000);
+        } catch (err) {
+            // Clipboard can be blocked (permissions, insecure context): select the text so the user can copy it manually
+            getSelection().selectAllChildren(outputDiv);
+            flashCopied("Press Ctrl+C / ⌘C", "Copy blocked. Result selected, press Ctrl+C or ⌘C.", 3000);
+            console.error("Failed to copy text:", err);
+        }
+    }
+
+    // --- Events ---
+    sourceInput.addEventListener("input", () => update());
+    sourceInput.addEventListener("focus", () => panelInput.classList.add("focused"));
+    sourceInput.addEventListener("blur", () => panelInput.classList.remove("focused"));
+
+    modeTabs.forEach((tab) => tab.addEventListener("click", () => {
+        setMode(tab.dataset.mode);
+        update({immediate: true});
+    }));
+
+    swapBtn.addEventListener("click", () => {
+        // Move a valid result into the input; otherwise keep what the user typed
+        if (outputDiv.textContent && !outputDiv.classList.contains("error-box")) {
+            sourceInput.value = outputDiv.textContent;
+        }
+        setMode(mode === "number" ? "sqid" : "number");
+        update({immediate: true});
+        sourceInput.focus();
     });
 
-    // --- Utility Functions ---
-    function debounce(func, wait) {
-        let timeout;
-        const debounced = function(...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
-        };
-        debounced.cancel = function() {
-            clearTimeout(timeout);
-        };
-        return debounced;
-    }
+    copyBtn.addEventListener("click", copyResult);
 
-    // --- Core Functions ---
-    const runConversion = (inputText) => {
-        const cacheKey = `${state.sourceMode}:${inputText}`;
-        if (conversionCache.has(cacheKey)) {
-            const cached = conversionCache.get(cacheKey);
-            // LRU: re-insert so this entry moves to the end (most recent) of the Map's insertion order
-            conversionCache.delete(cacheKey);
-            conversionCache.set(cacheKey, cached);
-            applyConversionResult(cached.result, cached.error);
+    randomBtn.addEventListener("click", () => {
+        const id = String(generateRandomID());
+        if (id.startsWith("Error")) {
+            showOutput("Failed to generate random ID.", true);
+            console.error(id);
             return;
         }
-
-        // WASM validates each line and reports failures as "Error: line N: ..." strings
-        const result = state.sourceMode === 'number' ? encodeSqid(inputText) : decodeSqid(inputText);
-        let error = null;
-        if (typeof result !== 'string' || result.startsWith("Error:")) {
-            const msg = String(result).replace(/^Error:\s*/, '');
-            error = msg.charAt(0).toUpperCase() + msg.slice(1);
-        }
-
-        // Limit cache size to prevent memory leak: evict the least recently used entry (first in the Map)
-        if (conversionCache.size >= CACHE_LIMIT) {
-            conversionCache.delete(conversionCache.keys().next().value);
-        }
-        conversionCache.set(cacheKey, { result, error });
-
-        applyConversionResult(result, error);
-    };
-
-    const applyConversionResult = (result, error) => {
-        if (error) {
-            outputDiv.textContent = error;
-            outputDiv.classList.add('error-box');
-        } else {
-            outputDiv.textContent = result;
-            outputDiv.classList.remove('error-box');
-        }
-    };
-
-    const debouncedRunConversion = debounce(runConversion, 250); // ⚡ Bolt: Debounce WASM execution to improve typing performance
-
-    function handleConversion(immediate = false) {
-        const inputText = sourceInput.value.trim();
-        outputContainer.classList.toggle('input-has-text', inputText.length > 0);
-        charCount.textContent = `${sourceInput.value.length} / 5000`;
-
-        // ⚡ Bolt: Early return if normalized input and mode haven't changed to prevent redundant processing
-        const currentKey = `${state.sourceMode}:${inputText}`;
-        if (currentKey === lastProcessedKey && immediate !== true) {
-            return;
-        }
-        lastProcessedKey = currentKey;
-
-        // Clear output only when input is empty to avoid flickering
-        if (!inputText) {
-            outputDiv.innerHTML = '';
-            outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
-            debouncedRunConversion.cancel();
-            return;
-        }
-
-        outputDiv.className = 'text-area result-box'; // Reset class and keep result-box for styling
-
-        if (immediate === true) {
-            debouncedRunConversion.cancel();
-            runConversion(inputText);
-        } else {
-            debouncedRunConversion(inputText);
-        }
-    }
-
-    function handleSwap() {
-        const currentOutput = !outputDiv.classList.contains('error-box') ? outputDiv.textContent : '';
-        [state.sourceMode, state.targetMode] = [state.targetMode, state.sourceMode];
-        sourceInput.value = currentOutput;
-        updateUI();
-        handleConversion(true);
+        sourceInput.value = id;
+        setMode("number");
+        update({immediate: true});
         sourceInput.focus();
-    }
+    });
 
-    function updateUI() {
-        document.querySelectorAll('.mode-tab').forEach(tab => {
-            const isActive = tab.dataset.mode === state.sourceMode;
-            tab.classList.toggle('active', isActive);
-            tab.setAttribute('aria-pressed', String(isActive));
-        });
-
-        document.getElementById('input-label').textContent = state.sourceMode === 'number' ? 'Numbers' : 'Sqids';
-        document.getElementById('output-label').textContent = state.sourceMode === 'number' ? 'Sqids' : 'Numbers';
-        sourceInput.placeholder = state.sourceMode === 'number' ? "e.g. 1, 2, 3\n127" : "e.g. 86Rf07\nEwF";
-    }
-
-    function copyToClipboard(text, button) {
-        if (!text || outputDiv.classList.contains('error-box')) return;
-        navigator.clipboard.writeText(text).then(() => {
-            button.classList.add("copied");
-            copyStatus.textContent = "Copied to clipboard";
-            setTimeout(() => {
-                button.classList.remove("copied");
-                copyStatus.textContent = "";
-            }, 2000);
-        }).catch(err => {
-            // Clipboard can be blocked (permissions, insecure context): select the text so the user can copy it manually
-            const range = document.createRange();
-            range.selectNodeContents(outputDiv);
-            getSelection().removeAllRanges();
-            getSelection().addRange(range);
-            copyStatus.textContent = "Copy blocked. Result selected, press Ctrl+C or ⌘C.";
-            copyTooltip.textContent = "Press Ctrl+C / ⌘C";
-            button.classList.add("copied");
-            setTimeout(() => {
-                button.classList.remove("copied");
-                copyTooltip.textContent = "Copied!";
-                copyStatus.textContent = "";
-            }, 3000);
-            console.error('Failed to copy text: ', err);
-        });
-    }
-
-    function handleRandomGenerate() {
-        try {
-            const randomID = generateRandomID(); // from WASM
-            if (!randomID || randomID.toString().startsWith("Error")) {
-                throw new Error(randomID);
-            }
-
-            // Ensure we're in NUMBER → SQID mode
-            state.sourceMode = 'number';
-            state.targetMode = 'sqid';
-
-            sourceInput.value = randomID.toString();
-            updateUI();
-            handleConversion(true);
-            sourceInput.focus();
-
-        } catch (err) {
-            outputDiv.textContent = "Failed to generate random ID.";
-            outputDiv.classList.add('error-box');
-            console.error(err);
-        }
-    }
-
-    // --- Initial UI Setup on Load ---
-    updateUI();
-
+    setMode(mode);
+    update({immediate: true}); // convert anything the browser restored into the textarea
 }).catch((err) => {
     console.error("Failed to initialize the application:", err);
     // Keep the page content (and SEO text) intact; only report the failure in the output panel.
-    const output = document.getElementById("output");
-    output.textContent = "This tool could not start. Your browser may not support WebAssembly.";
-    output.classList.add("error-box");
-    document.getElementById("output-container").classList.add("input-has-text");
+    showOutput("This tool could not start. Your browser may not support WebAssembly.", true);
 });

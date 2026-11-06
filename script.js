@@ -150,12 +150,13 @@ Promise.all([wasmPromise, domReadyPromise]).then(([wasmResult]) => {
 
     function updateUI() {
         document.querySelectorAll('.mode-tab').forEach(tab => {
-            const isSourceTab = tab.parentElement.id === 'source-mode-tabs';
-            const isActive = isSourceTab ? tab.dataset.mode === state.sourceMode : tab.dataset.mode === state.targetMode;
+            const isActive = tab.dataset.mode === state.sourceMode;
             tab.classList.toggle('active', isActive);
             tab.setAttribute('aria-pressed', String(isActive));
         });
 
+        document.getElementById('input-label').textContent = state.sourceMode === 'number' ? 'Numbers' : 'Sqids';
+        document.getElementById('output-label').textContent = state.sourceMode === 'number' ? 'Sqids' : 'Numbers';
         sourceInput.placeholder = state.sourceMode === 'number' ? "e.g. 1, 2, 3\n127" : "e.g. 86Rf07\nEwF";
     }
 

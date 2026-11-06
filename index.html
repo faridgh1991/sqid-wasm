@@ -173,7 +173,7 @@
                     "@type": "HowToStep",
                     "position": 1,
                     "name": "Select Mode",
-                    "text": "Choose 'Number' to encode or 'SQID' to decode"
+                    "text": "Choose Encode to turn numbers into Sqids, or Decode to turn Sqids back into numbers"
                 },
                 {
                     "@type": "HowToStep",
@@ -292,13 +292,17 @@
 
     <main id="main-content">
         <article class="seo-content">
-            <header>
+            <header class="hero-wrap">
                 <h1>Free Online Sqids Encoder and Decoder</h1>
-                <p>
+                <p class="lead">
                     Turn numbers into short, URL-safe IDs like <code>EwF</code> and decode them back, instantly.
                     Use commas to pack several numbers into one Sqid, and new lines to convert many at once.
-                    Everything runs in your browser with WebAssembly, so your data never leaves your device.
                 </p>
+                <ul class="feature-chips" aria-label="Highlights">
+                    <li><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Runs in your browser</li>
+                    <li><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> No data sent to a server</li>
+                    <li><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Free, no sign-up</li>
+                </ul>
             </header>
         </article>
 
@@ -308,12 +312,12 @@
             </section>
         </noscript>
 
-        <section aria-labelledby="tool-heading">
+        <section class="tool-card" aria-labelledby="tool-heading">
             <h2 id="tool-heading" class="visually-hidden">Sqids encoder and decoder tool</h2>
             <nav class="mode-selector" aria-label="Mode selection">
-                <div class="mode-tabs" id="source-mode-tabs">
-                    <button class="mode-tab" data-mode="number" aria-pressed="true">Number</button>
-                    <button class="mode-tab" data-mode="sqid" aria-pressed="false">SQID</button>
+                <div class="mode-tabs" id="source-mode-tabs" role="group" aria-label="Direction">
+                    <button class="mode-tab" data-mode="number" aria-pressed="true">Encode</button>
+                    <button class="mode-tab" data-mode="sqid" aria-pressed="false">Decode</button>
                 </div>
                 <button class="swap-btn" id="swapBtn" aria-label="Swap between encode and decode modes" title="Swap modes">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -325,15 +329,12 @@
                         <polyline points="10 18 4 12 10 6"></polyline>
                     </svg>
                 </button>
-                <div class="mode-tabs" id="target-mode-tabs">
-                    <button class="mode-tab" data-mode="number" disabled aria-pressed="false">Number</button>
-                    <button class="mode-tab" data-mode="sqid" disabled aria-pressed="true">SQID</button>
-                </div>
+                <p class="mode-hint">Commas pack numbers into one Sqid · each new line is a new Sqid</p>
             </nav>
 
             <div class="panels-container">
                 <section class="panel panel-input" id="panel-input" aria-labelledby="input-label">
-                    <label for="sourceInput" id="input-label" class="visually-hidden">Input numbers or Sqid to convert</label>
+                    <label for="sourceInput" id="input-label" class="panel-label">Numbers</label>
                     <textarea id="sourceInput" class="text-area" maxlength="5000"
                               placeholder="e.g. 1, 2, 3&#10;127"
                               autocomplete="off" spellcheck="false"
@@ -341,7 +342,8 @@
                     <div class="panel-toolbar">
                         <div class="toolbar-group">
                             <button class="chip-btn" id="randomBtn" type="button" title="Generate a random 64-bit number">
-                                <span aria-hidden="true">🎲</span> Random
+                                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+                                Random
                             </button>
                             <span class="char-count" id="charCount" aria-live="polite">0 / 5000</span>
                         </div>
@@ -350,7 +352,7 @@
                 </section>
 
                 <section class="panel panel-output" aria-labelledby="output-label">
-                    <h2 id="output-label" class="visually-hidden">Conversion Result</h2>
+                    <h2 id="output-label" class="panel-label">Sqids</h2>
                     <div id="output-container">
                         <div id="empty-state" class="empty-state">
                             <p>Your result will appear here</p>
@@ -402,8 +404,8 @@
 
             <section aria-labelledby="how-to-use-sqid-wasm">
                 <h2 id="how-to-use-sqid-wasm">How to Use This Tool</h2>
-                <ol>
-                    <li><strong>Pick a direction.</strong> Choose <em>Number</em> to encode, or <em>SQID</em> to decode.</li>
+                <ol class="steps">
+                    <li><strong>Pick a direction.</strong> Choose <em>Encode</em> to turn numbers into Sqids, or <em>Decode</em> to turn Sqids back into numbers.</li>
                     <li><strong>Enter your input.</strong> Type a number or paste a Sqid. Separate numbers with
                         commas to pack them into a single Sqid, and put each item on its own line to convert a whole
                         list. Press <em>Random</em> to try a unique 64-bit ID.</li>
@@ -448,14 +450,14 @@
 
             <section aria-labelledby="when-to-use-sqids">
                 <h2 id="when-to-use-sqids">When to Use Sqids</h2>
-                <ul>
-                    <li><strong>Public URLs:</strong> replace numeric IDs in links, such as <code>/user/EwF</code>
+                <ul class="cards">
+                    <li><strong>Public URLs</strong> Replace numeric IDs in links, such as <code>/user/EwF</code>
                         instead of <code>/user/127</code>.</li>
-                    <li><strong>Short references:</strong> order numbers, invite codes, ticket IDs, and short links
+                    <li><strong>Short references</strong> Order numbers, invite codes, ticket IDs, and short links
                         that people may read aloud or type.</li>
-                    <li><strong>Hiding sequence at a glance:</strong> consecutive IDs don't look consecutive.</li>
+                    <li><strong>Hiding sequence at a glance</strong> Consecutive IDs don't look consecutive.</li>
                 </ul>
-                <p>
+                <p class="callout" role="note">
                     <strong>Don't use Sqids for security.</strong> Anyone who knows the alphabet can decode them, so
                     they are not a replacement for encryption, access control, or secret tokens.
                 </p>

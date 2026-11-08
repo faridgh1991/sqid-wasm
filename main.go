@@ -25,8 +25,10 @@ func encodeSqid(_ js.Value, args []js.Value) interface{} {
 			lines[i] = ""
 			continue
 		}
-		var numbers []uint64
-		for _, part := range strings.Split(line, ",") {
+		// ⚡ Bolt: Preallocate slice based on number of parts to prevent reallocations
+		parts := strings.Split(line, ",")
+		numbers := make([]uint64, 0, len(parts))
+		for _, part := range parts {
 			n, err := strconv.ParseUint(strings.TrimSpace(part), 10, 64)
 			if err != nil {
 				return js.ValueOf(fmt.Sprintf("Error: line %d: %q is not a valid number (0 to 18446744073709551615)", i+1, strings.TrimSpace(part)))

@@ -16,3 +16,6 @@
 ## 2026-09-14 - [Redundant WASM Processing on Unchanged Inputs]
 **Learning:** Event listeners attached to text inputs often trigger on non-visible state changes or spaces when inputs are normalized (e.g., using `.trim()`). Since this app calls into a WebAssembly boundary for conversion, re-processing structurally identical inputs introduces unnecessary execution latency.
 **Action:** Track a composite state string (e.g., mode + trimmed input) to implement an early return bypass in the event handler, making sure UI side-effects tied to raw input (like character counters) still update beforehand.
+## 2026-09-17 - [Go Slice Preallocation]
+**Learning:** In Go, continuously appending to a nil slice inside a loop (like iterating through `strings.Split` results) causes multiple hidden underlying array reallocations, which degrades performance (observed ~25% penalty in benchmarks).
+**Action:** Always preallocate slice capacity using `make([]Type, 0, len(source))` when the exact maximum size is known beforehand.

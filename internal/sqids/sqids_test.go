@@ -3,7 +3,7 @@ package sqids_test
 import (
 	"testing"
 
-	"sqid-wasm/sqids"
+	"sqid-wasm/internal/sqids"
 )
 
 func TestDecodeString(t *testing.T) {

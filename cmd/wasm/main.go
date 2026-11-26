@@ -4,12 +4,12 @@ package main
 
 import (
 	"fmt"
-	"sqid-wasm/generator"
+	"sqid-wasm/internal/generator"
 	"strconv"
 	"strings"
 	"syscall/js"
 
-	"sqid-wasm/sqids"
+	"sqid-wasm/internal/sqids"
 )
 
 func encodeSqid(_ js.Value, args []js.Value) interface{} {

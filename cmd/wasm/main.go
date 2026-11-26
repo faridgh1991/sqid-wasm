@@ -1,18 +1,19 @@
 //go:build js && wasm
 
+// Command wasm exposes the Sqids encoder, decoder and ID generator to JavaScript.
 package main
 
 import (
 	"fmt"
-	"sqid-wasm/internal/generator"
 	"strconv"
 	"strings"
 	"syscall/js"
 
+	"sqid-wasm/internal/generator"
 	"sqid-wasm/internal/sqids"
 )
 
-func encodeSqid(_ js.Value, args []js.Value) interface{} {
+func encodeSqid(_ js.Value, args []js.Value) any {
 	if len(args) < 1 {
 		return js.ValueOf("Error: Missing input")
 	}
@@ -31,7 +32,9 @@ func encodeSqid(_ js.Value, args []js.Value) interface{} {
 		for _, part := range parts {
 			n, err := strconv.ParseUint(strings.TrimSpace(part), 10, 64)
 			if err != nil {
-				return js.ValueOf(fmt.Sprintf("Error: line %d: %q is not a valid number (0 to 18446744073709551615)", i+1, strings.TrimSpace(part)))
+				return js.ValueOf(fmt.Sprintf(
+					"Error: line %d: %q is not a valid number (0 to 18446744073709551615)", i+1, strings.TrimSpace(part),
+				))
 			}
 			numbers = append(numbers, n)
 		}
@@ -45,7 +48,7 @@ func encodeSqid(_ js.Value, args []js.Value) interface{} {
 	return js.ValueOf(strings.Join(lines, "\n"))
 }
 
-func decodeSqid(_ js.Value, args []js.Value) interface{} {
+func decodeSqid(_ js.Value, args []js.Value) any {
 	if len(args) < 1 {
 		return js.ValueOf("Error: Missing input")
 	}
@@ -71,7 +74,7 @@ func decodeSqid(_ js.Value, args []js.Value) interface{} {
 	return js.ValueOf(strings.Join(lines, "\n"))
 }
 
-func generateRandomID(_ js.Value, _ []js.Value) interface{} {
+func generateRandomID(_ js.Value, _ []js.Value) any {
 	generatedID, err := generator.GenerateRandomID()
 	if err != nil {
 		return js.ValueOf("Error: " + err.Error())

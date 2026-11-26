@@ -1,7 +1,9 @@
+// Package generator creates random Snowflake IDs.
 package generator
 
 import (
 	"crypto/rand"
+	"errors"
 	"fmt"
 	"math/big"
 	"sync"
@@ -14,7 +16,7 @@ var (
 	once          sync.Once
 )
 
-// GenerateRandomID generates a random unique ID using snowflake
+// GenerateRandomID generates a random unique ID using snowflake.
 func GenerateRandomID() (uint64, error) {
 	// Initialize the snowflake node with the random node ID
 	err := InitializeNode()
@@ -51,7 +53,7 @@ func InitializeNode() error {
 	)
 
 	if snowflakeNode == nil {
-		return fmt.Errorf("failed to initialize snowflake node")
+		return errors.New("failed to initialize snowflake node")
 	}
 
 	return nil

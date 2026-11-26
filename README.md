@@ -33,6 +33,12 @@ make build   # tinygo build -o assets/sqids.wasm -target wasm ./cmd/wasm
 make test
 ```
 
+### Git Hooks
+
+```bash
+make hooks   # enable the pre-commit hook: go fix -diff, go vet, golangci-lint, go test
+```
+
 ### Run Locally
 
 Serve the repository root with a static file server:

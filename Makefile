@@ -1,4 +1,4 @@
-.PHONY: build test vet lint fix serve
+.PHONY: build test vet lint fix hooks serve
 
 # wasm_exec.js must come from the same TinyGo that built the binary, so copy it on every build.
 build:
@@ -20,6 +20,10 @@ lint:
 fix:
 	go fix ./...
 	GOOS=js GOARCH=wasm go fix ./...
+
+# Run once per clone to enable .githooks/pre-commit (fix, vet, lint, test).
+hooks:
+	git config core.hooksPath .githooks
 
 serve:
 	python3 -m http.server 8000

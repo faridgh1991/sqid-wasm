@@ -1,0 +1,9 @@
+#!/bin/sh
+# Enable once per clone with `make hooks`.
+set -e
+
+# -diff prints pending fixes and exits non-zero instead of editing files; apply them with `make fix`.
+go fix -diff ./...
+GOOS=js GOARCH=wasm go fix -diff ./...
+
+make vet lint test

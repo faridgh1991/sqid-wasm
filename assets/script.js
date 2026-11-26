@@ -3,7 +3,7 @@
 // --- Start WebAssembly loading immediately ---
 const go = new Go();
 // no-cache = revalidate each load (cheap 304), so a rebuilt binary is never shadowed by a stale cached copy
-const wasmPromise = WebAssembly.instantiateStreaming(fetch("sqids.wasm", {cache: "no-cache"}), go.importObject);
+const wasmPromise = WebAssembly.instantiateStreaming(fetch("assets/sqids.wasm", {cache: "no-cache"}), go.importObject);
 
 // --- Theme toggle (independent of WASM, so it works even if loading fails) ---
 // The initial theme is set by the inline script in <head> to avoid a flash.

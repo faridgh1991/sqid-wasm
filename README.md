@@ -29,16 +29,22 @@ A simple Go WebAssembly demo using [Sqids](https://sqids.org/go) to encode and d
 ### Build
 
 ```bash
-tinygo build -o sqids.wasm -target wasm .
+make build   # tinygo build -o assets/sqids.wasm -target wasm ./cmd/wasm
+make test
+```
+
+### Git Hooks
+
+```bash
+make hooks   # enable the pre-commit hook: go fix -diff, go vet, golangci-lint, go test
 ```
 
 ### Run Locally
 
-Serve the directory with a static file server:
+Serve the repository root with a static file server:
 
 ```bash
-python3 -m http.server
-# or use any static server, like `serve` or `http-server`
+make serve   # python3 -m http.server 8000
 ```
 
 Visit [http://localhost:8000](http://localhost:8000).
@@ -53,13 +59,18 @@ In the live app:
 ## 📁 Project Structure
 
 ```
-├── index.html
-├── script.js
-├── style.css
-├── main.go
-├── sqids.wasm
-├── wasm_exec.js
-└── README.md
+├── index.html            # page entry (GitHub Pages serves the repo root)
+├── assets/               # static files loaded by index.html
+│   ├── script.js
+│   ├── style.css
+│   ├── wasm_exec.js      # TinyGo JS glue, copied by `make build`
+│   ├── sqids.wasm        # build output
+│   └── sqid-wasm.png
+├── cmd/wasm/main.go      # WASM entry point, exports JS functions
+├── internal/
+│   ├── sqids/            # Sqids encode/decode
+│   └── generator/        # Snowflake ID generator
+└── Makefile
 ```
 
 ## 📖 License

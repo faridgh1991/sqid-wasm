@@ -1,8 +1,9 @@
 .PHONY: build test vet lint fix hooks serve
 
 # wasm_exec.js must come from the same TinyGo that built the binary, so copy it on every build.
+# -no-debug drops DWARF, which embeds absolute local paths and made the binary differ per machine.
 build:
-	tinygo build -o assets/sqids.wasm -target wasm ./cmd/wasm
+	tinygo build -no-debug -o assets/sqids.wasm -target wasm ./cmd/wasm
 	cp "$$(tinygo env TINYGOROOT)/targets/wasm_exec.js" assets/wasm_exec.js
 
 test:

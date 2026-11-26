@@ -29,7 +29,7 @@ A simple Go WebAssembly demo using [Sqids](https://sqids.org/go) to encode and d
 ### Build
 
 ```bash
-make build   # tinygo build -o assets/sqids.wasm -target wasm ./cmd/wasm
+make build   # tinygo build -no-debug -o assets/sqids.wasm -target wasm ./cmd/wasm
 make test
 ```
 

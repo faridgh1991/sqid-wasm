@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.14.0
+          install-only: true
+      - uses: acifani/setup-tinygo@v3
+        with:
+          tinygo-version: "0.44.0"
+
+      # Same checks as .githooks/pre-commit.
+      - name: go fix
+        run: |
+          go fix -diff ./...
+          GOOS=js GOARCH=wasm go fix -diff ./...
+      - name: Vet, lint, test
+        run: make vet lint test
+      - name: Build WASM
+        run: make build

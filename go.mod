@@ -1,6 +1,6 @@
 module sqid-wasm
 
-go 1.27.0
+go 1.27.4
 
 require (
 	github.com/bwmarrin/snowflake v0.3.0
